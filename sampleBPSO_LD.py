@@ -49,10 +49,10 @@ results_storage = {
 
 inputparameters = [
     28,      # center frequency (GHz)
-    2,       # bandwidth (GHz)
-    5,      # dimension of unit cell (mm)
+    3,       # bandwidth (GHz)
+    14,      # dimension of unit cell (mm)
     0.8,     # width of pixel (mm)
-    5,      # number of pixels (npix) 
+    14,      # number of pixels (npix) 
     0.001,   # target mean squared error (MSE)
     0        # substrate type index (e.g., 0 = default/substrate A)
 ]
@@ -772,7 +772,7 @@ def pyoptimize_te(inputparameters):
     pso_cost_fn = create_pso_cost_wrapper(inputparameters)
 
     options = {
-        'SwarmSize': 1,
+        'SwarmSize': 100,
         'MaxIterations': 25,
         'CognitiveWeight': 1.49,
         'SocialWeight': 1.49,
