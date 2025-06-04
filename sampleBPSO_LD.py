@@ -49,10 +49,10 @@ results_storage = {
 
 inputparameters = [
     28,      # center frequency (GHz)
-    4,       # bandwidth (GHz)
-    15,      # dimension of unit cell (mm)
+    2,       # bandwidth (GHz)
+    5,      # dimension of unit cell (mm)
     0.8,     # width of pixel (mm)
-    15,      # number of pixels (npix) 
+    5,      # number of pixels (npix) 
     0.001,   # target mean squared error (MSE)
     0        # substrate type index (e.g., 0 = default/substrate A)
 ]
@@ -67,7 +67,7 @@ class BinaryParticleSwarmOptimizer:
             'SwarmSize': min(100, 10 * nvars),
             'MaxIterations': 200 * nvars,
             'FunctionTolerance': 1e-12,
-            'MaxStallIterations': 10,
+            'MaxStallIterations': 20,
             'CognitiveWeight': 1.0,
             'SocialWeight': 1.0,
             'InertiaRange': [0.4, 1.2],
@@ -448,11 +448,11 @@ class BinaryParticleSwarmOptimizer:
         # Calculate target response
         frequency = inputparameters[0]
         bandwidth = inputparameters[1]
-        target_x = np.linspace(frequency - bandwidth/2, frequency + bandwidth/2, len(freq))
-        target_y, _ = calculate_s21_te()
+        # target_x = np.linspace(frequency - bandwidth/2, frequency + bandwidth/2, len(freq))
+        target_y, _ = calculate_s21_te(freq)
         
         plt.plot(freq, te, 'b-', linewidth=2, label='Optimized TE')
-        plt.plot(target_x, target_y, 'r--', linewidth=2, label='Target TE')
+        plt.plot(freq, target_y, 'r--', linewidth=2, label='Target TE')
         
         # Mark center frequency
         plt.axvline(x=frequency, color='k', linestyle=':', linewidth=1, alpha=0.5)
@@ -490,11 +490,11 @@ def plot_solution(matrix, te, freq, mse, save_dir=None):
     plt.subplot(122)
     frequency = inputparameters[0]
     bandwidth = inputparameters[1]
-    target_x = np.linspace(frequency - bandwidth/2, frequency + bandwidth/2, len(freq))
+    # target_x = np.linspace(frequency - bandwidth/2, frequency + bandwidth/2, len(freq))
     target_y, _ = calculate_s21_te()
     
     plt.plot(freq, te, 'b-', label='Optimized TE')
-    plt.plot(target_x, target_y, 'r--', label='Target TE')
+    plt.plot(freq, target_y, 'r--', label='Target TE')
     plt.xlabel('Frequency (GHz)')
     plt.ylabel('Transmission Efficiency')
     plt.title('TE Response')
@@ -511,7 +511,7 @@ def plot_solution(matrix, te, freq, mse, save_dir=None):
 def save_solution(matrix, mse, inputparameters, solution_type="best"):
     """Save solution data and CST file"""
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    save_dir = os.path.join(r"C:\Users\User\cst-python-api\solutions", timestamp)
+    save_dir = os.path.join(r"C:\Users\GOPAL\cst-python-api\solutions", timestamp)
     os.makedirs(save_dir, exist_ok=True)
     
     # Save matrix and parameters
@@ -539,25 +539,17 @@ def clear_com_cache():
 
 def coth(x):
     return np.cosh(x) / np.sinh(x)
-
-def calculate_s21_te():
+def calculate_s21_te(freq_array):
+    """
+    Calculate S21 TE response using the same frequency array as CST simulation
+    """
     # Filter specifications
     f0 = 28e9  # Center frequency in Hz
     FBW = 0.03  # Fractional bandwidth
     BW = f0 * FBW  # Absolute bandwidth in Hz
 
-    # Frequency range setup
-    fmin = 26e9
-    fmax = 30e9
-    fstep = 1e6
-    x1 = np.arange(fmin,fmax + 1e6, 1e6)
-    len1 = len(x1)
-    len2 = 501 # len of frequency
-    interp_indices = np.linspace(0, len1 - 1, len2 - 2)
-    interp_func = interp1d(np.arange(len1), x1)
-    interpolated = interp_func(interp_indices)
-    extended_x1 = np.concatenate(([x1[0]], interpolated, [x1[-1]]))
-    f = extended_x1
+    # Convert input frequency from GHz to Hz for calculations
+    f = freq_array * 1e9  # Convert GHz to Hz
     
     # Filter parameters
     N = 3  # Filter order
@@ -614,7 +606,7 @@ def calculate_s21_te():
         A_inv = np.linalg.inv(A)
         S21[i] = -2j * A_inv[-1, 0]
 
-    return np.abs(S21), f
+    return np.abs(S21) , f 
 
 def calculate_pcr(matrix, inputparameters): 
     clear_com_cache()
@@ -673,7 +665,7 @@ def calculate_pcr(matrix, inputparameters):
                     )
         
         # Save with unique name
-        save_path = r"C:/Users/User/Documents/saved_cst_projects/"
+        save_path = r"C:/Users/GOPAL/Documents/saved_cst_projects/"
         save_file_name = "filtermetasurface.cst"
         if not os.path.exists(save_path):
             os.makedirs(save_path)
@@ -726,9 +718,8 @@ def create_pso_cost_wrapper(inputparameters):
             
             frequency = inputparameters[0]
             bandwidth = inputparameters[1]
-            
-            target_x = np.linspace(frequency - bandwidth/2, frequency + bandwidth/2, len(freq))
-            target_y, _ = calculate_s21_te()
+            # target_x = np.linspace(frequency - bandwidth/2, frequency + bandwidth/2, len(freq))
+            target_y , f = calculate_s21_te(freq)
             
             mse = np.mean((te - target_y) ** 2)
             
@@ -781,11 +772,11 @@ def pyoptimize_te(inputparameters):
     pso_cost_fn = create_pso_cost_wrapper(inputparameters)
 
     options = {
-        'SwarmSize': 50,
-        'MaxIterations': 50,
-        'CognitiveWeight': 2.0,
-        'SocialWeight': 2.0,
-        'InitialInertia': 1.2,
+        'SwarmSize': 1,
+        'MaxIterations': 25,
+        'CognitiveWeight': 1.49,
+        'SocialWeight': 1.49,
+        'InitialInertia': 1.49,
         'FinalInertia': 0.4,
         'LinearDecay': True,
         'VelocityLimit': 6.0,
