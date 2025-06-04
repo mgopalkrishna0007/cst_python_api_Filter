@@ -511,7 +511,7 @@ def plot_solution(matrix, te, freq, mse, save_dir=None):
 def save_solution(matrix, mse, inputparameters, solution_type="best"):
     """Save solution data and CST file"""
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    save_dir = os.path.join(r"C:\Users\User\cst-python-api\solutions", timestamp)
+    save_dir = os.path.join(r"C:\Users\IDARE_ECE\cst-python-api\solutions", timestamp)
     os.makedirs(save_dir, exist_ok=True)
     
     # Save matrix and parameters
@@ -665,7 +665,7 @@ def calculate_pcr(matrix, inputparameters):
                     )
         
         # Save with unique name
-        save_path = r"C:/Users/User/Documents/saved_cst_projects2/"
+        save_path = r"C:/Users/IDARE_ECE/Documents/saved_cst_projects2/"
         save_file_name = "filtermetasurface2.cst"
         if not os.path.exists(save_path):
             os.makedirs(save_path)
