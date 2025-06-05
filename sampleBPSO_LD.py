@@ -49,10 +49,10 @@ results_storage = {
 
 inputparameters = [
     28,      # center frequency (GHz)
-    3,       # bandwidth (GHz)
-    14,      # dimension of unit cell (mm)
+    4, # bandwidth (GHz)
+    7 ,    # dimension of unit cell (mm)
     0.8,     # width of pixel (mm)
-    14,      # number of pixels (npix) 
+    7,     # number of pixels (npix) 
     0.001,   # target mean squared error (MSE)
     0        # substrate type index (e.g., 0 = default/substrate A)
 ]
@@ -545,14 +545,14 @@ def calculate_s21_te(freq_array):
     """
     # Filter specifications
     f0 = 28e9  # Center frequency in Hz
-    FBW = 0.03  # Fractional bandwidth
+    FBW = 0.001# Fractional bandwidth
     BW = f0 * FBW  # Absolute bandwidth in Hz
 
     # Convert input frequency from GHz to Hz for calculations
     f = freq_array * 1e9  # Convert GHz to Hz
     
     # Filter parameters
-    N = 3  # Filter order
+    N = 1 # Filter order
     Lr_dB = -30  # Reflection coefficient in dB
     Lar = -10 * np.log10(1 - 10**(0.1 * Lr_dB))  # Pass band ripple
 
@@ -776,8 +776,8 @@ def pyoptimize_te(inputparameters):
         'MaxIterations': 25,
         'CognitiveWeight': 1.49,
         'SocialWeight': 1.49,
-        'InitialInertia': 1.49,
-        'FinalInertia': 0.4,
+        'InitialInertia': 1.1,
+        'FinalInertia': 0.2
         'LinearDecay': True,
         'VelocityLimit': 6.0,
         'Display': 'iter',
