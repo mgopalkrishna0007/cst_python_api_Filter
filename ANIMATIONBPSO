@@ -1,0 +1,339 @@
+ import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
+from matplotlib.colors import ListedColormap
+
+# ========================================
+# TUNABLE BPSO PARAMETERS
+# ========================================
+class BPSOConfig:
+    """Configuration class for Binary PSO parameters"""
+    def __init__(self):
+        # Grid parameters
+        self.grid_size = 15
+        self.n_particles = 100  # For visualization, we show one particle's evolution
+        
+        # PSO parameters
+        self.max_iterations = 100
+        self.w_initial = 1.1      # Initial inertia weight
+        self.w_final = 0.1        # Final inertia weight
+        self.c1 = 2            # Cognitive coefficient (personal best attraction)
+        self.c2 = 1.49            # Social coefficient (global best attraction)
+        
+        # Velocity parameters
+        self.v_max = 6.0         # Maximum velocity (for clamping)
+        self.v_min = -6.0        # Minimum velocity (for clamping)
+        
+        # Transfer function type
+        self.transfer_func = 'v_shape'  # Options: 'sigmoid', 'tanh', 'v_shape'
+        
+        # Animation parameters
+        self.animation_interval = 15  # milliseconds between frames
+        self.save_animation = False
+        self.animation_filename = 'bpso_animation.gif'
+        
+        # Fitness function parameters
+        self.target_pattern = 'checkerboard'  # Options: 'checkerboard', 'cross', 'border', 'random'
+        
+    def get_inertia_weight(self, iteration):
+        """Calculate inertia weight with linear decrease"""
+        return self.w_initial - (self.w_initial - self.w_final) * iteration / self.max_iterations
+
+# Initialize configuration
+config = BPSOConfig()
+
+# ========================================
+# FITNESS FUNCTIONS
+# ========================================
+def create_target_pattern(pattern_type, size):
+    """Create different target patterns for optimization"""
+    if pattern_type == 'checkerboard':
+        pattern = np.zeros((size, size))
+        for i in range(size):
+            for j in range(size):
+                pattern[i, j] = (i + j) % 2
+        return pattern
+    
+    elif pattern_type == 'cross':
+        pattern = np.zeros((size, size))
+        mid = size // 2
+        pattern[mid, :] = 1  # Horizontal line
+        pattern[:, mid] = 1  # Vertical line
+        return pattern
+    
+    elif pattern_type == 'border':
+        pattern = np.zeros((size, size))
+        pattern[0, :] = 1    # Top border
+        pattern[-1, :] = 1   # Bottom border
+        pattern[:, 0] = 1    # Left border
+        pattern[:, -1] = 1   # Right border
+        return pattern
+    
+    elif pattern_type == 'random':
+        np.random.seed(42)  # Fixed seed for reproducibility
+        return np.random.randint(0, 2, (size, size))
+    
+    else:
+        return np.ones((size, size)) * 0.5  # Default pattern
+
+def fitness_function(position, target):
+    """Calculate fitness as similarity to target pattern"""
+    # Fitness is the number of matching pixels (higher is better)
+    return np.sum(position == target)
+
+# ========================================
+# TRANSFER FUNCTIONS
+# ========================================
+def transfer_function(velocity, func_type='sigmoid'):
+    """Apply transfer function to convert velocity to probability"""
+    if func_type == 'sigmoid':
+        return 1.0 / (1.0 + np.exp(-velocity))
+    elif func_type == 'tanh':
+        return (np.tanh(velocity) + 1) / 2
+    elif func_type == 'v_shape':
+        return np.abs(np.tanh(velocity))
+    else:
+        return 1.0 / (1.0 + np.exp(-velocity))  # Default to sigmoid
+
+# ========================================
+# BINARY PSO CLASS
+# ========================================
+class BinaryPSO:
+    def __init__(self, config):
+        self.config = config
+        self.size = config.grid_size
+        
+        # Create target pattern
+        self.target = create_target_pattern(config.target_pattern, self.size)
+        
+        # Initialize particle position (binary matrix)
+        self.position = np.random.randint(0, 2, (self.size, self.size))
+        
+        # Initialize velocity (continuous values)
+        self.velocity = np.random.uniform(-1, 1, (self.size, self.size))
+        
+        # Personal best
+        self.personal_best_position = self.position.copy()
+        self.personal_best_fitness = fitness_function(self.position, self.target)
+        
+        # Global best (in this case, same as personal best since we have one particle)
+        self.global_best_position = self.personal_best_position.copy()
+        self.global_best_fitness = self.personal_best_fitness
+        
+        # History tracking
+        self.fitness_history = [self.personal_best_fitness]
+        self.flip_history = []
+        self.velocity_history = []
+        self.inertia_history = []
+        
+    def update_particle(self, iteration):
+        """Update particle position and velocity according to BPSO rules"""
+        # Calculate inertia weight
+        w = self.config.get_inertia_weight(iteration)
+        
+        # Generate random coefficients for cognitive and social components
+        r1 = np.random.rand(self.size, self.size)
+        r2 = np.random.rand(self.size, self.size)
+        
+        # Update velocity using BPSO equation
+        cognitive_component = self.config.c1 * r1 * (self.personal_best_position - self.position)
+        social_component = self.config.c2 * r2 * (self.global_best_position - self.position)
+        
+        self.velocity = (w * self.velocity + 
+                        cognitive_component + 
+                        social_component)
+        
+        # Clamp velocity to prevent explosion
+        self.velocity = np.clip(self.velocity, self.config.v_min, self.config.v_max)
+        
+        # Apply transfer function to get flip probabilities
+        flip_probabilities = transfer_function(self.velocity, self.config.transfer_func)
+        
+        # Generate random numbers for position update
+        random_matrix = np.random.rand(self.size, self.size)
+        
+        # Update position (flip bits based on probabilities)
+        old_position = self.position.copy()
+        flip_mask = random_matrix < flip_probabilities
+        self.position = np.where(flip_mask, 1 - self.position, self.position)
+        
+        # Count flips
+        num_flips = np.sum(old_position != self.position)
+        
+        # Calculate fitness
+        current_fitness = fitness_function(self.position, self.target)
+        
+        # Update personal best
+        if current_fitness > self.personal_best_fitness:
+            self.personal_best_position = self.position.copy()
+            self.personal_best_fitness = current_fitness
+            
+            # Update global best (same as personal best for single particle)
+            self.global_best_position = self.personal_best_position.copy()
+            self.global_best_fitness = self.personal_best_fitness
+        
+        # Store history
+        self.fitness_history.append(current_fitness)
+        self.flip_history.append(num_flips)
+        self.velocity_history.append(np.mean(np.abs(self.velocity)))
+        self.inertia_history.append(w)
+        
+        return {
+            'position': self.position,
+            'fitness': current_fitness,
+            'num_flips': num_flips,
+            'avg_velocity': np.mean(np.abs(self.velocity)),
+            'flip_probability': np.mean(flip_probabilities),
+            'inertia': w,
+            'best_fitness': self.personal_best_fitness
+        }
+
+# ========================================
+# VISUALIZATION SETUP
+# ========================================
+# Set up the figure with 4 subplots
+fig = plt.figure(figsize=(20, 12))
+fig.suptitle(f"Binary PSO Optimization - Target: {config.target_pattern.title()}", 
+             fontsize=16, y=0.95)
+
+# Create subplots in a 2x2 grid
+ax1 = plt.subplot(2, 3, 1)  # Current position
+ax2 = plt.subplot(2, 3, 2)  # Target pattern
+ax3 = plt.subplot(2, 3, 3)  # Personal best
+ax4 = plt.subplot(2, 3, 4)  # Fitness evolution
+ax5 = plt.subplot(2, 3, 5)  # PSO parameters
+ax6 = plt.subplot(2, 3, 6)  # Flip statistics
+
+# Initialize BPSO
+pso = BinaryPSO(config)
+
+# Create colormap (white for 0, blue for 1)
+cmap = ListedColormap(['white', 'blue'])
+
+# Initialize plots
+img1 = ax1.imshow(pso.position, cmap=cmap, vmin=0, vmax=1)
+ax1.set_title("Current Position")
+ax1.grid(True, which='both', color='black', linestyle='-', linewidth=0.5)
+ax1.set_xticks(np.arange(-0.5, config.grid_size, 1), minor=True)
+ax1.set_yticks(np.arange(-0.5, config.grid_size, 1), minor=True)
+
+img2 = ax2.imshow(pso.target, cmap=cmap, vmin=0, vmax=1)
+ax2.set_title("Target Pattern")
+ax2.grid(True, which='both', color='black', linestyle='-', linewidth=0.5)
+ax2.set_xticks(np.arange(-0.5, config.grid_size, 1), minor=True)
+ax2.set_yticks(np.arange(-0.5, config.grid_size, 1), minor=True)
+
+img3 = ax3.imshow(pso.personal_best_position, cmap=cmap, vmin=0, vmax=1)
+ax3.set_title("Personal Best")
+ax3.grid(True, which='both', color='black', linestyle='-', linewidth=0.5)
+ax3.set_xticks(np.arange(-0.5, config.grid_size, 1), minor=True)
+ax3.set_yticks(np.arange(-0.5, config.grid_size, 1), minor=True)
+
+# Fitness evolution plot
+ax4.set_xlim(0, config.max_iterations)
+ax4.set_ylim(0, config.grid_size * config.grid_size + 1)
+ax4.set_xlabel("Iteration")
+ax4.set_ylabel("Fitness")
+ax4.set_title("Fitness Evolution")
+fitness_line, = ax4.plot([], [], 'b-', lw=2, label='Current Fitness')
+best_fitness_line, = ax4.plot([], [], 'r-', lw=2, label='Best Fitness')
+ax4.legend()
+ax4.grid(True)
+
+# PSO parameters plot
+ax5.set_xlim(0, config.max_iterations)
+ax5.set_ylim(0, 1.1)
+ax5.set_xlabel("Iteration")
+ax5.set_ylabel("Value")
+ax5.set_title("PSO Parameters")
+inertia_line, = ax5.plot([], [], 'g-', lw=2, label=f'Inertia (w)')
+prob_line, = ax5.plot([], [], 'm--', lw=2, label='Avg Flip Prob')
+ax5.legend()
+ax5.grid(True)
+
+# Flip statistics plot
+ax6.set_xlim(0, config.max_iterations)
+ax6.set_ylim(0, config.grid_size * config.grid_size + 5)
+ax6.set_xlabel("Iteration")
+ax6.set_ylabel("Number of Flips")
+ax6.set_title("Flip Statistics")
+flips_line, = ax6.plot([], [], 'orange', lw=2, label='Flips per Iteration')
+ax6.legend()
+ax6.grid(True)
+
+# Text annotations
+info_text = fig.text(0.02, 0.02, "", fontsize=10, verticalalignment='bottom')
+
+def init():
+    """Initialize animation"""
+    fitness_line.set_data([], [])
+    best_fitness_line.set_data([], [])
+    inertia_line.set_data([], [])
+    prob_line.set_data([], [])
+    flips_line.set_data([], [])
+    info_text.set_text("")
+    return
+
+def update(iteration):
+    """Update function for animation"""
+    if iteration >= config.max_iterations:
+        return
+    
+    # Update PSO
+    result = pso.update_particle(iteration)
+    
+    # Update images
+    img1.set_array(result['position'])
+    img3.set_array(pso.personal_best_position)
+    
+    # Update plots
+    iterations = list(range(len(pso.fitness_history)))
+    
+    fitness_line.set_data(iterations, pso.fitness_history)
+    best_fitness_line.set_data(iterations, [pso.personal_best_fitness] * len(iterations))
+    
+    if len(pso.inertia_history) > 0:
+        inertia_line.set_data(list(range(len(pso.inertia_history))), pso.inertia_history)
+        prob_line.set_data(list(range(len(pso.inertia_history))), [result['flip_probability']] * len(pso.inertia_history))
+    
+    if pso.flip_history:
+        flips_line.set_data(list(range(len(pso.flip_history))), pso.flip_history)
+    
+    # Update info text
+    max_fitness = config.grid_size * config.grid_size
+    progress = (result['best_fitness'] / max_fitness) * 100
+    
+    info_text.set_text(
+        f"BPSO Parameters:\n"
+        f"Grid Size: {config.grid_size}×{config.grid_size}\n"
+        f"c1 (cognitive): {config.c1}, c2 (social): {config.c2}\n"
+        f"Transfer Function: {config.transfer_func}\n"
+        f"Iteration: {iteration+1}/{config.max_iterations}\n"
+        f"Current Fitness: {result['fitness']}/{max_fitness} ({result['fitness']/max_fitness*100:.1f}%)\n"
+        f"Best Fitness: {result['best_fitness']}/{max_fitness} ({progress:.1f}%)\n"
+        f"Inertia Weight: {result['inertia']:.3f}\n"
+        f"Pixels Flipped: {result['num_flips']}\n"
+        f"Avg Flip Prob: {result['flip_probability']:.3f}"
+    )
+    
+    return
+
+# Create animation (disabled blitting to avoid axes issues)
+ani = FuncAnimation(fig, update, frames=config.max_iterations, init_func=init,
+                   interval=config.animation_interval, blit=False, repeat=False)
+
+plt.tight_layout()
+plt.show()
+
+# Save animation if requested
+if config.save_animation:
+    print(f"Saving animation to {config.animation_filename}...")
+    ani.save(config.animation_filename, writer='pillow', fps=7, dpi=100)
+    print("Animation saved!")
+
+# Print final results
+print(f"\nBPSO Optimization Complete!")
+print(f"Target Pattern: {config.target_pattern}")
+print(f"Final Fitness: {pso.personal_best_fitness}/{config.grid_size**2}")
+print(f"Success Rate: {(pso.personal_best_fitness / config.grid_size**2) * 100:.1f}%")
+print(f"Total Iterations: {len(pso.fitness_history)}")
