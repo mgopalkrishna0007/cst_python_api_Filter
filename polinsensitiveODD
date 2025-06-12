@@ -1,0 +1,58 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+def create_fully_symmetric_matrix(m):
+    if m % 2 == 0:
+        raise ValueError("Matrix size must be odd.")
+
+    matrix = np.zeros((m, m), dtype=int)
+    c = m // 2  # center index
+
+    # Step 1: Create symmetric central row and column
+    half = [np.random.randint(0, 2) for _ in range(c)]
+    center_val = np.random.randint(0, 2)
+    full_line = half + [center_val] + half[::-1]
+    matrix[c, :] = full_line
+    matrix[:, c] = full_line
+
+    # Step 2: Fill upper-left quadrant (excluding center row/column)
+    for i in range(c):
+        for j in range(i, c):  # upper triangle
+            val = np.random.randint(0, 2)
+            # original
+            matrix[i, j] = val
+            # diagonal symmetry in quadrant
+            matrix[j, i] = val
+
+            # mirror to all quadrants:
+            matrix[i, m - 1 - j] = val       # top-right
+            matrix[j, m - 1 - i] = val
+            matrix[m - 1 - i, j] = val       # bottom-left
+            matrix[m - 1 - j, i] = val
+            matrix[m - 1 - i, m - 1 - j] = val   # bottom-right
+            matrix[m - 1 - j, m - 1 - i] = val
+
+    return matrix
+
+# Parameters
+grid_size = 21  # must be odd
+dimension = 10  # physical dimension, say 10 cm x 10 cm
+
+# Create matrix
+pixel_matrix = create_fully_symmetric_matrix(grid_size)
+
+# Create plot
+fig, ax = plt.subplots(figsize=(6, 6))
+cmap = plt.cm.Reds
+cmap.set_under('white')
+
+c = ax.imshow(pixel_matrix, cmap=cmap, vmin=0.01, extent=[0, dimension, 0, dimension])
+ax.set_title(f"{grid_size}x{grid_size} Symmetric Pixel Pattern", fontsize=14)
+ax.set_xlabel("X (cm)")
+ax.set_ylabel("Y (cm)")
+ax.set_xticks(np.linspace(0, dimension, grid_size + 1))
+ax.set_yticks(np.linspace(0, dimension, grid_size + 1))
+ax.grid(True, which='both', color='gray', linewidth=0.5, linestyle='--')
+
+plt.tight_layout()
+plt.show()
