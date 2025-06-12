@@ -1,49 +1,55 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def create_symmetric_pattern_even(m):
+def generate_lower_triangle_shape_even(m):
     if m % 2 != 0:
         raise ValueError("Matrix size must be even.")
     
-    matrix = np.zeros((m, m), dtype=int)
+    shape = np.zeros((m, m), dtype=int)
     half = m // 2
 
-    # Fill lower triangle of upper-left quadrant (i >= j)
+    # Fill only lower triangle (including diagonal) of upper-left quadrant
     for i in range(half):
         for j in range(i + 1):  # includes diagonal
-            val = np.random.randint(0, 2)
-            matrix[i, j] = val
+            shape[i, j] = np.random.randint(0, 2)
+    return shape
 
-            # Symmetric mirrors
-            matrix[j, i] = val                        # mirror across main diagonal in upper-left
-            matrix[i, m - 1 - j] = val                # mirror to upper-right
-            matrix[j, m - 1 - i] = val                # symmetric in upper-right
-            matrix[m - 1 - i, j] = val                # mirror to bottom-left
-            matrix[m - 1 - j, i] = val                # symmetric in bottom-left
-            matrix[m - 1 - i, m - 1 - j] = val        # mirror to bottom-right
-            matrix[m - 1 - j, m - 1 - i] = val        # symmetric in bottom-right
+def mirror_8_fold_even(base):
+    m = base.shape[0]
+    half = m // 2
+    matrix = np.zeros_like(base)
+
+    for i in range(half):
+        for j in range(i + 1):
+            val = base[i, j]
+            matrix[i, j] = val
+            matrix[j, i] = val
+            matrix[i, m - 1 - j] = val
+            matrix[j, m - 1 - i] = val
+            matrix[m - 1 - i, j] = val
+            matrix[m - 1 - j, i] = val
+            matrix[m - 1 - i, m - 1 - j] = val
+            matrix[m - 1 - j, m - 1 - i] = val
 
     return matrix
 
 # Parameters
-m = 20  # even dimension
-dimension = 10  # physical dimension in cm
+m = 20  # even size
 
-# Generate pattern
-pattern = create_symmetric_pattern_even(m)
+# Generate random 1/8th region (lower triangle of upper-left quadrant)
+shape_1_8_even = generate_lower_triangle_shape_even(m)
+full_shape_even = mirror_8_fold_even(shape_1_8_even)
 
 # Plotting
-fig, ax = plt.subplots(figsize=(6, 6))
-cmap = plt.cm.Reds
-cmap.set_under('white')
+fig, axs = plt.subplots(1, 2, figsize=(12, 6))
 
-c = ax.imshow(pattern, cmap=cmap, vmin=0.01, extent=[0, dimension, 0, dimension])
-ax.set_title(f"{m}x{m} Symmetric Pattern from Lower Triangle", fontsize=14)
-ax.set_xlabel("X (cm)")
-ax.set_ylabel("Y (cm)")
-ax.set_xticks(np.linspace(0, dimension, m + 1))
-ax.set_yticks(np.linspace(0, dimension, m + 1))
-ax.grid(True, which='both', color='gray', linewidth=0.5, linestyle='--')
+axs[0].imshow(shape_1_8_even, cmap='Reds', vmin=0.01)
+axs[0].set_title('Random 1/8th Region (Lower Triangle, Even Size)')
+axs[0].axis('off')
+
+axs[1].imshow(full_shape_even, cmap='Reds', vmin=0.01)
+axs[1].set_title('Full 8-Fold Symmetric Pattern (Even Size)')
+axs[1].axis('off')
 
 plt.tight_layout()
 plt.show()
