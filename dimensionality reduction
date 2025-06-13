@@ -1,0 +1,104 @@
+import numpy as np
+from scipy.fftpack import dct
+from scipy.ndimage import gaussian_filter1d
+
+
+
+import json
+
+def extract_s_parameters(json_path, s_params_to_extract):
+    with open(json_path, 'r') as f:
+        data = json.load(f)
+
+    simulations = data['simulations']
+    
+    all_results = []
+
+    for sim in simulations:
+        freq = sim['frequency']
+        s_params = sim['s_parameters']
+        sim_result = {
+            'matrix_id': sim['matrix_id'],
+            'frequency': freq
+        }
+
+        for param in s_params_to_extract:
+            if param in s_params:
+                sim_result[param] = [
+                    complex(entry["real"], entry["imag"]) for entry in s_params[param]
+                ]
+            else:
+                sim_result[param] = None  # Mark as missing
+        all_results.append(sim_result)
+    
+    return all_results
+
+# === Usage Example ===
+json_file_path = r"C:\Users\GOPAL\Downloads\cst_batch_results_20250613_153723_converted.json"
+# List of S-parameters to extract
+s_params = ["SZMax1ZMax1", "SZMin1ZMin1", "SZMax1ZMin1", "SZMin1ZMax1"]
+
+results = extract_s_parameters(json_file_path, s_params)
+
+# Print sample output for first simulation
+for param in s_params:
+    print(f"\n=== Matrix ID: {results[0]['matrix_id']} ===")
+    print(f"S-Parameter: {param}")
+    if results[0][param] is not None:
+        for f, cval in zip(results[0]['frequency'], results[0][param]):
+            print(f"Freq: {f} GHz \t S: {cval.real:.4f} + {cval.imag:.4f}j")
+    else:
+        print("Not present in the simulation.")
+
+
+def process_s_parameter(mag_data, apply_smoothing=True, dct_len=200):
+    """
+    Process raw S-parameter magnitude data:
+    - Optional Gaussian smoothing
+    - Apply DCT
+    - Return first `dct_len` coefficients
+    """
+    if apply_smoothing:
+        smoothed = gaussian_filter1d(mag_data, sigma=1)
+    else:
+        smoothed = mag_data
+
+    # Apply DCT type-II, norm='ortho' for energy preservation
+    dct_coeffs = dct(smoothed, type=2, norm='ortho')
+
+    # Truncate to desired length
+    return dct_coeffs[:dct_len]
+
+# === Apply to the first simulation as example ===
+sample_result = results[0]
+primary_features = {}
+
+for param in s_params:
+    complex_vals = sample_result[param]
+    if complex_vals is not None:
+        # Use magnitude or dB magnitude as input feature
+        magnitude = np.abs(complex_vals)
+        # Or optionally: magnitude = 20 * np.log10(np.abs(complex_vals) + 1e-12)
+
+        features = process_s_parameter(magnitude, apply_smoothing=True, dct_len=200)
+        primary_features[param] = features
+
+        print(f"\nPrimary features ({param}):")
+        print(features)
+        print ( len(features))    
+    else:
+        primary_features[param] = None
+
+
+import matplotlib.pyplot as plt
+
+plt.figure(figsize=(12, 5))
+for param in s_params:
+    if primary_features[param] is not None:
+        plt.plot(primary_features[param], label=param)
+plt.title("DCT Coefficients (First 200)")
+plt.xlabel("Coefficient Index")
+plt.ylabel("Amplitude")
+plt.legend()
+plt.grid(True)
+plt.show()
