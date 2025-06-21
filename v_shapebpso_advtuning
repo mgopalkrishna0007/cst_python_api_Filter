@@ -1,0 +1,293 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from dataclasses import dataclass
+from typing import Callable, List, Dict, Any
+import matplotlib.colors as mcolors
+
+# ---------------------------- CONFIGURATION CLASS ---------------------------- #
+@dataclass
+class BPSOConfig:
+    name: str
+    grid_size: int = 50
+    n_particles: int = 100
+    max_iterations: int = 1000
+    initial_inertia: float = 0.9
+    final_inertia: float = 0.3
+    c1: float = 1.4
+    c2: float = 1.6
+    transfer_func: Callable = lambda v: np.abs(np.tanh(v))
+    
+    def get_inertia(self, iteration: int) -> float:
+        """Calculate inertia weight for current iteration."""
+        return self.initial_inertia - (self.initial_inertia - self.final_inertia) * (iteration / self.max_iterations)
+
+# ---------------------------- BPSO RUNNER CLASS ---------------------------- #
+class BPSORunner:
+    def __init__(self, config: BPSOConfig, target_pattern: np.ndarray):
+        self.config = config
+        self.target = target_pattern
+        self.results = {}
+        
+    def fitness(self, position: np.ndarray) -> float:
+        """Calculate fitness as number of matching bits."""
+        return np.sum(position == self.target)
+    
+    def flip_based_update(self, x: np.ndarray, v: np.ndarray) -> tuple:
+        """Flip-based BPSO update rule."""
+        prob = self.config.transfer_func(v)
+        r = np.random.rand(*x.shape)
+        flip_mask = r < prob
+        new_x = np.where(flip_mask, 1 - x, x)
+        flips = np.sum(x != new_x, axis=(1, 2))
+        return new_x, flips, np.mean(prob, axis=(1, 2))
+    
+    def run_optimization(self) -> Dict[str, Any]:
+        """Run BPSO optimization and return results."""
+        # Initialize population
+        shape = (self.config.n_particles, self.config.grid_size, self.config.grid_size)
+        position = np.random.randint(0, 2, shape)
+        velocity = np.random.uniform(-1, 1, shape)
+        
+        # Personal bests
+        best_position = position.copy()
+        fitness_values = np.array([self.fitness(p) for p in position])
+        
+        # History tracking
+        fitness_history = [fitness_values.copy()]
+        flip_prob_history = []
+        flip_count_history = []
+        diversity_history = []
+        
+        # Main optimization loop
+        for iteration in range(self.config.max_iterations):
+            # Random matrices
+            r1 = np.random.rand(*shape)
+            r2 = np.random.rand(*shape)
+            
+            # Current inertia weight
+            w = self.config.get_inertia(iteration)
+            
+            # Global best
+            global_best = best_position[np.argmax(fitness_values)]
+            
+            # Velocity update
+            velocity = (
+                w * velocity +
+                self.config.c1 * r1 * (best_position - position) +
+                self.config.c2 * r2 * (global_best - position)
+            )
+            
+            # Position update
+            position, flips, prob = self.flip_based_update(position, velocity)
+            
+            # Fitness evaluation
+            fitness_values = np.array([self.fitness(p) for p in position])
+            
+            # Update personal bests
+            mask = fitness_values > np.array([self.fitness(pb) for pb in best_position])
+            best_position[mask] = position[mask]
+            
+            # History tracking
+            fitness_history.append(fitness_values.copy())
+            flip_prob_history.append(np.mean(prob))
+            flip_count_history.append(np.sum(flips))
+            
+            # Diversity calculation
+            diversity = np.mean(np.std(position.reshape(self.config.n_particles, -1), axis=0))
+            diversity_history.append(diversity)
+        
+        # Final results
+        best_overall = best_position[np.argmax([self.fitness(p) for p in best_position])]
+        final_fitness = self.fitness(best_overall)
+        
+        return {
+            'best_pattern': best_overall,
+            'final_fitness': final_fitness,
+            'fitness_history': np.array(fitness_history),
+            'flip_prob_history': flip_prob_history,
+            'flip_count_history': flip_count_history,
+            'diversity_history': diversity_history,
+            'config': self.config
+        }
+
+# ---------------------------- MULTI-CONFIG RUNNER ---------------------------- #
+def run_multiple_configs(configs: List[BPSOConfig], target_pattern: np.ndarray) -> Dict[str, Any]:
+    """Run BPSO for multiple configurations and return all results."""
+    results = {}
+    
+    for config in configs:
+        print(f"Running optimization for {config.name}...")
+        runner = BPSORunner(config, target_pattern)
+        results[config.name] = runner.run_optimization()
+        print(f"Completed {config.name} - Final fitness: {results[config.name]['final_fitness']}")
+    
+    return results
+
+# ---------------------------- PLOTTING FUNCTIONS ---------------------------- #
+def plot_comparison_results(results: Dict[str, Any], target_pattern: np.ndarray):
+    """Create comparison plots for all configurations."""
+    
+    # Set up colors for different configurations
+    colors = list(mcolors.TABLEAU_COLORS.values())
+    if len(results) > len(colors):
+        colors = colors * (len(results) // len(colors) + 1)
+    
+    # Create figure with subplots (2x3 layout)
+    fig, axs = plt.subplots(2, 3, figsize=(18, 10))
+    fig.suptitle("BPSO Multi-Configuration Comparison", fontsize=16, fontweight='bold')
+    
+    # Plot 1: Average Fitness Evolution
+    axs[0, 0].set_title("Average Fitness Over Iterations", fontweight='bold')
+    for i, (config_name, result) in enumerate(results.items()):
+        avg_fitness = np.mean(result['fitness_history'], axis=1)
+        axs[0, 0].plot(avg_fitness, color=colors[i], label=config_name, linewidth=2)
+    axs[0, 0].set_xlabel("Iteration")
+    axs[0, 0].set_ylabel("Average Fitness")
+    axs[0, 0].legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+    axs[0, 0].grid(True, alpha=0.3)
+    
+    # Plot 2: Best Fitness Evolution
+    axs[0, 1].set_title("Best Fitness Over Iterations", fontweight='bold')
+    for i, (config_name, result) in enumerate(results.items()):
+        best_fitness = np.max(result['fitness_history'], axis=1)
+        axs[0, 1].plot(best_fitness, color=colors[i], label=config_name, linewidth=2)
+    axs[0, 1].set_xlabel("Iteration")
+    axs[0, 1].set_ylabel("Best Fitness")
+    axs[0, 1].legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+    axs[0, 1].grid(True, alpha=0.3)
+    
+    # Plot 3: Flip Probability Evolution
+    axs[0, 2].set_title("Average Flip Probability", fontweight='bold')
+    for i, (config_name, result) in enumerate(results.items()):
+        axs[0, 2].plot(result['flip_prob_history'], color=colors[i], label=config_name, linewidth=2)
+    axs[0, 2].set_xlabel("Iteration")
+    axs[0, 2].set_ylabel("Flip Probability")
+    axs[0, 2].legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+    axs[0, 2].grid(True, alpha=0.3)
+    
+    # Plot 4: Total Flips per Iteration
+    axs[1, 0].set_title("Total Bit Flips per Iteration", fontweight='bold')
+    for i, (config_name, result) in enumerate(results.items()):
+        axs[1, 0].plot(result['flip_count_history'], color=colors[i], label=config_name, linewidth=2)
+    axs[1, 0].set_xlabel("Iteration")
+    axs[1, 0].set_ylabel("Number of Flips")
+    axs[1, 0].legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+    axs[1, 0].grid(True, alpha=0.3)
+    
+    # Plot 5: Population Diversity
+    axs[1, 1].set_title("Population Diversity", fontweight='bold')
+    for i, (config_name, result) in enumerate(results.items()):
+        axs[1, 1].plot(result['diversity_history'], color=colors[i], label=config_name, linewidth=2)
+    axs[1, 1].set_xlabel("Iteration")
+    axs[1, 1].set_ylabel("Avg Std Dev Across Bits")
+    axs[1, 1].legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+    axs[1, 1].grid(True, alpha=0.3)
+    
+    # Plot 6: Final Performance Summary
+    axs[1, 2].set_title("Final Performance Summary", fontweight='bold')
+    config_names = list(results.keys())
+    final_accuracies = [results[name]['final_fitness'] / (results[name]['config'].grid_size ** 2) 
+                       for name in config_names]
+    
+    bars = axs[1, 2].bar(range(len(config_names)), final_accuracies, 
+                        color=colors[:len(config_names)], alpha=0.7)
+    axs[1, 2].set_xlabel("Configuration")
+    axs[1, 2].set_ylabel("Final Accuracy")
+    axs[1, 2].set_xticks(range(len(config_names)))
+    axs[1, 2].set_xticklabels(config_names, rotation=45, ha='right')
+    axs[1, 2].grid(True, alpha=0.3, axis='y')
+    
+    # Add value labels on bars
+    for bar, acc in zip(bars, final_accuracies):
+        height = bar.get_height()
+        axs[1, 2].text(bar.get_x() + bar.get_width()/2., height + 0.001,
+                      f'{acc:.2%}', ha='center', va='bottom', fontsize=10)
+    
+    plt.tight_layout(rect=[0, 0.03, 1, 0.97])
+    plt.show()
+
+# ---------------------------- MAIN EXECUTION ---------------------------- #
+def main():
+    # Create target pattern
+    np.random.seed(42)  # For reproducible results
+    GRID_SIZE = 10
+    target = np.random.randint(0, 2, (GRID_SIZE, GRID_SIZE))
+    
+    # Define different configurations to compare
+    configs = [
+        BPSOConfig(
+            name="Config1-Default",
+            grid_size=10,
+            n_particles=100,
+            max_iterations=1000,
+            initial_inertia=0.9,
+            final_inertia=0.3,
+            c1=1.49,
+            c2=1.49,
+            transfer_func=lambda v: np.abs(np.tanh(v))
+        ),
+        BPSOConfig(
+            name="Config2-HighInertia",
+            grid_size=10,
+            n_particles=100,
+            max_iterations=1000,
+            initial_inertia=0.9,
+            final_inertia=0.3,
+            c1=1.49,
+            c2=1.49,
+            transfer_func=lambda v: np.abs(np.tanh(v))
+        ),
+        BPSOConfig(
+            name="Config3-HighC1",
+            grid_size=10,
+            n_particles=100,
+            max_iterations=1000,
+            initial_inertia=0.9,
+            final_inertia=0.3,
+            c1=1.49,
+            c2=1.49,
+            transfer_func=lambda v: np.abs(np.tanh(v))
+        ),
+        BPSOConfig(
+            name="Config4-SigmoidTransfer",
+            grid_size=10,
+            n_particles=100,
+            max_iterations=1000,
+            initial_inertia=0.9,
+            final_inertia=0.3,
+            c1=1.49,
+            c2=1.49,
+            transfer_func=lambda v: np.abs(np.tanh(v))
+        ),
+        BPSOConfig(
+            name="Config5-MoreParticles",
+            grid_size=10,
+            n_particles=100,
+            max_iterations=1000,
+            initial_inertia=0.9,
+            final_inertia=0.3,
+            c1=1.49,
+            c2=1.49,
+            transfer_func=lambda v: np.abs(np.tanh(v))
+        )
+    ]
+    
+    # Run optimization for all configurations
+    results = run_multiple_configs(configs, target)
+    
+    # Create comparison plots
+    plot_comparison_results(results, target)
+    
+    # Print summary statistics
+    print("\n" + "="*80)
+    print("FINAL RESULTS SUMMARY")
+    print("="*80)
+    for config_name, result in results.items():
+        config = result['config']
+        accuracy = result['final_fitness'] / (config.grid_size ** 2)
+        print(f"{config_name:20s} | Accuracy: {accuracy:6.2%} | "
+              f"Fitness: {result['final_fitness']:4d}/{config.grid_size**2}")
+    print("="*80)
+
+if __name__ == "__main__":
+    main()
