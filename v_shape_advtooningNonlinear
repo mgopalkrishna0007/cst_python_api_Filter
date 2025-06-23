@@ -1,0 +1,997 @@
+# ============================== IMPORTS ============================== #
+import numpy as np
+import matplotlib.pyplot as plt
+from dataclasses import dataclass
+from typing import Callable, List, Dict, Any
+import matplotlib.colors as mcolors
+from scipy.ndimage import convolve
+
+# ============================== GLOBAL CONFIGURATION ============================== #
+class GlobalConfig:
+    CONFIGS = [
+        {
+            "grid_size": 10,
+            "n_particles": 100,
+            "max_iterations": 40,
+            "initial_inertia": 0.95,
+            "final_inertia": 0.0,
+            "c1": 1.49,
+            "c2": 1.49
+        },
+        {
+            "grid_size": 10,
+            "n_particles": 100,
+            "max_iterations": 40,
+            "initial_inertia": 0.9,
+            "final_inertia": 0.0,
+            "c1": 1.49,
+            "c2": 1.49
+        },
+        {
+             "grid_size": 10,
+            "n_particles": 100,
+            "max_iterations": 40,
+            "initial_inertia": 0.85,
+            "final_inertia": 0.0,
+            "c1": 1.49,
+            "c2": 1.49
+        },
+        {
+            "grid_size": 10,
+            "n_particles": 100,
+            "max_iterations": 40,
+            "initial_inertia": 0.8,
+            "final_inertia": 0.0,
+            "c1": 1.49,
+            "c2": 1.49
+        },
+        {
+            "grid_size": 10,
+            "n_particles": 100,
+            "max_iterations": 40,
+            "initial_inertia": 0.75,
+            "final_inertia": 0.0,
+            "c1": 1.49,
+            "c2": 1.49
+        },
+
+                {
+            "grid_size": 10,
+            "n_particles": 100,
+            "max_iterations": 40,
+            "initial_inertia": 0.7,
+            "final_inertia": 0.0,
+            "c1": 1.49,
+            "c2": 1.49
+        },
+
+                {
+            "grid_size": 10,
+            "n_particles": 100,
+            "max_iterations": 40,
+            "initial_inertia": 0.65,
+            "final_inertia": 0.0,
+            "c1": 1.49,
+            "c2": 1.49
+        },
+
+                {
+            "grid_size": 10,
+            "n_particles": 100,
+            "max_iterations": 40,
+            "initial_inertia": 0.6,
+            "final_inertia": 0.0,
+            "c1": 1.49,
+            "c2": 1.49
+        },
+                {
+            "grid_size": 10,
+            "n_particles": 100,
+            "max_iterations": 40,
+            "initial_inertia": 0.55,
+            "final_inertia": 0.0,
+            "c1": 1.49,
+            "c2": 1.49
+        },
+                {
+            "grid_size": 10,
+            "n_particles": 100,
+            "max_iterations": 40,
+            "initial_inertia": 0.5,
+            "final_inertia": 0.0,
+            "c1": 1.49,
+            "c2": 1.49
+        },
+                {
+            "grid_size": 10,
+            "n_particles": 100,
+            "max_iterations": 40,
+            "initial_inertia": 0.45,
+            "final_inertia": 0.0,
+            "c1": 1.49,
+            "c2": 1.49
+        },
+                {
+            "grid_size": 10,
+            "n_particles": 100,
+            "max_iterations": 40,
+            "initial_inertia": 0.4,
+            "final_inertia": 0.0,
+            "c1": 1.49,
+            "c2": 1.49
+        },
+                        {
+            "grid_size": 10,
+            "n_particles": 100,
+            "max_iterations": 40,
+            "initial_inertia": 0.37,
+            "final_inertia": 0.0,
+            "c1": 1.49,
+            "c2": 1.49
+        },
+
+                             {
+            "grid_size": 10,
+            "n_particles": 100,
+            "max_iterations": 40,
+            "initial_inertia": 0.35,
+            "final_inertia": 0.0,
+            "c1": 1.49,
+            "c2": 1.49
+        },
+
+                                {
+            "grid_size": 10,
+            "n_particles": 100,
+            "max_iterations": 40,
+            "initial_inertia": 0.32,
+            "final_inertia": 0.0,
+            "c1": 1.49,
+            "c2": 1.49
+        },
+                                {
+            "grid_size": 10,
+            "n_particles": 100,
+            "max_iterations": 40,
+            "initial_inertia": 0.3,
+            "final_inertia": 0.0,
+            "c1": 1.49,
+            "c2": 1.49
+        },
+    ]
+
+    # More complex transfer function
+    TRANSFER_FUNC = staticmethod(lambda v: np.abs(np.tanh(v)))  # Steeper transition
+    N_TRIALS = 5
+    RANDOM_SEED = 42
+
+    PLOT_COLORS = list(mcolors.TABLEAU_COLORS.values())
+    PLOT_FIGSIZE = (18, 10)
+    PLOT_TITLE_FONTSIZE = 16
+
+# ============================== CONFIG DATACLASS ============================== #
+@dataclass
+class BPSOConfig:
+    name: str
+    grid_size: int
+    n_particles: int
+    max_iterations: int
+    initial_inertia: float
+    final_inertia: float
+    c1: float
+    c2: float
+    transfer_func: Callable
+
+    # def get_inertia(self, iteration: int) -> float:
+    #     return self.initial_inertia - (self.initial_inertia - self.final_inertia) * (iteration / self.max_iterations)
+
+    def get_inertia(self, iteration: int) -> float:
+        return self.initial_inertia * np.cos(np.pi * iteration / (2 * self.max_iterations))
+
+# ============================== BPSO RUNNER ============================== #
+class BPSORunner:
+    def __init__(self, config: BPSOConfig, target_pattern: np.ndarray):
+        self.config = config
+        self.target = target_pattern
+        
+        # Precompute target properties for complex fitness calculation
+        self.target_conv = self._convolve_pattern(target_pattern)
+        self.target_symmetry = self._calculate_symmetry(target_pattern)
+        self.target_clusters = self._count_clusters(target_pattern)
+        
+    def _convolve_pattern(self, pattern: np.ndarray) -> np.ndarray:
+        """Apply a convolution to detect patterns and edges"""
+        kernel = np.array([[0.05, 0.2, 0.05],
+                          [0.2, -1.0, 0.2],
+                          [0.05, 0.2, 0.05]])
+        return convolve(pattern.astype(float), kernel, mode='constant')
+    
+    def _calculate_symmetry(self, pattern: np.ndarray) -> float:
+        """Calculate symmetry score (0-1)"""
+        sym1 = np.mean(pattern == np.fliplr(pattern))
+        sym2 = np.mean(pattern == np.flipud(pattern))
+        return (sym1 + sym2) / 2
+    
+    def _count_clusters(self, pattern: np.ndarray) -> int:
+        """Count connected clusters of 1s"""
+        from scipy.ndimage import label
+        labeled, num_features = label(pattern)
+        return num_features
+    
+    def fitness(self, position: np.ndarray) -> float:
+        """Complex non-linear fitness function"""
+        # Basic matching score (weighted less)
+        match_score = np.sum(position == self.target) / position.size
+        
+        # Convolution similarity (emulates EM response)
+        current_conv = self._convolve_pattern(position)
+        conv_diff = np.exp(-0.5 * np.sum((current_conv - self.target_conv)**2))
+        
+        # Symmetry similarity
+        current_symmetry = self._calculate_symmetry(position)
+        sym_diff = 1 - np.abs(current_symmetry - self.target_symmetry)
+        
+        # Cluster similarity
+        current_clusters = self._count_clusters(position)
+        cluster_diff = np.exp(-0.1 * np.abs(current_clusters - self.target_clusters))
+        
+        # Combine scores non-linearly
+        fitness = (
+            0.0 * match_score + 
+            0.4 * conv_diff + 
+            0.0 * sym_diff + 
+            0.2 * cluster_diff
+        )
+        
+        # Add small noise to make fitness landscape more complex
+        return np.clip(fitness, 0, 1)
+
+    def flip_based_update(self, x: np.ndarray, v: np.ndarray) -> tuple:
+        prob = self.config.transfer_func(v)
+        r = np.random.rand(*x.shape)
+        flip_mask = r < prob
+        new_x = np.where(flip_mask, 1 - x, x)
+        flips = np.sum(x != new_x, axis=(1, 2))
+        return new_x, flips, np.mean(prob, axis=(1, 2))
+
+    def run_optimization(self) -> Dict[str, Any]:
+        shape = (self.config.n_particles, self.config.grid_size, self.config.grid_size)
+        position = np.random.randint(0, 2, shape)
+        velocity = np.random.uniform(-1, 1, shape)
+
+        best_position = position.copy()
+        fitness_values = np.array([self.fitness(p) for p in position])
+
+        fitness_history = [fitness_values.copy()]
+        flip_prob_history = []
+        flip_count_history = []
+        diversity_history = []
+        velocity_variance_history = []  # To store velocity variance per iteration
+
+        for iteration in range(self.config.max_iterations):
+            r1 = np.random.rand(*shape)
+            r2 = np.random.rand(*shape)
+            w = self.config.get_inertia(iteration)
+            global_best = best_position[np.argmax(fitness_values)]
+
+            velocity = (
+                w * velocity +
+                self.config.c1 * r1 * (best_position - position) +
+                self.config.c2 * r2 * (global_best - position)
+            )
+
+            # Calculate velocity variance for this iteration
+            velocity_flat = velocity.reshape(self.config.n_particles, -1)
+            velocity_variance = np.var(velocity_flat, axis=1).mean()  # Mean variance across particles
+            velocity_variance_history.append(velocity_variance)
+
+            position, flips, prob = self.flip_based_update(position, velocity)
+            fitness_values = np.array([self.fitness(p) for p in position])
+
+            mask = fitness_values > np.array([self.fitness(pb) for pb in best_position])
+            best_position[mask] = position[mask]
+
+            fitness_history.append(fitness_values.copy())
+            flip_prob_history.append(np.mean(prob))
+            flip_count_history.append(np.sum(flips))
+            diversity = np.mean(np.std(position.reshape(self.config.n_particles, -1), axis=0))
+            diversity_history.append(diversity)
+
+        best_overall = best_position[np.argmax([self.fitness(p) for p in best_position])]
+        final_fitness = self.fitness(best_overall)
+       
+        return {
+            'best_pattern': best_overall,
+            'final_fitness': final_fitness,
+            'fitness_history': np.array(fitness_history),
+            'flip_prob_history': flip_prob_history,
+            'flip_count_history': flip_count_history,
+            'diversity_history': diversity_history,
+            'velocity_variance_history': velocity_variance_history,
+            'config': self.config
+        }
+
+
+
+####################################################################################
+
+def analyze_varying_parameters(configs: List[BPSOConfig]) -> Dict[str, Any]:
+    """Analyze which parameters are varying across configurations"""
+    if len(configs) <= 1:
+        return {"varying_param": "grid_size", "param_name": "Grid Size", "values": []}
+    
+    # Extract all parameter values
+    param_values = {
+        'grid_size': [c.grid_size for c in configs],
+        'n_particles': [c.n_particles for c in configs],
+        'max_iterations': [c.max_iterations for c in configs],
+        'initial_inertia': [c.initial_inertia for c in configs],
+        'final_inertia': [c.final_inertia for c in configs],
+        'c1': [c.c1 for c in configs],
+        'c2': [c.c2 for c in configs]
+    }
+    
+    # Find which parameters are varying
+    varying_params = {}
+    for param, values in param_values.items():
+        unique_values = list(set(values))
+        if len(unique_values) > 1:
+            varying_params[param] = {
+                'values': values,
+                'unique_values': sorted(unique_values),
+                'count': len(unique_values)
+            }
+    
+    # Determine primary varying parameter (the one with most variation or most important)
+    param_priority = ['grid_size', 'n_particles', 'max_iterations', 'initial_inertia', 'final_inertia', 'c1', 'c2']
+    primary_param = None
+    
+    for param in param_priority:
+        if param in varying_params:
+            primary_param = param
+            break
+    
+    if primary_param is None:
+        primary_param = 'grid_size'  # Default fallback
+    
+    param_names = {
+        'grid_size': 'Grid Size',
+        'n_particles': 'Swarm Size',
+        'max_iterations': 'Max Iterations',
+        'initial_inertia': 'Initial Inertia',
+        'final_inertia': 'Final Inertia',
+        'c1': 'C1 Parameter',
+        'c2': 'C2 Parameter'
+    }
+    
+    return {
+        'varying_param': primary_param,
+        'param_name': param_names.get(primary_param, primary_param),
+        'values': param_values.get(primary_param, []),
+        'all_varying': varying_params
+    }
+
+def create_smart_config_names(configs: List[BPSOConfig]) -> List[BPSOConfig]:
+    """Create intelligent configuration names based on varying parameters"""
+    param_analysis = analyze_varying_parameters(configs)
+    varying_param = param_analysis['varying_param']
+    param_name = param_analysis['param_name']
+    
+    updated_configs = []
+    for config in configs:
+        if varying_param == 'grid_size':
+            name = f"Grid_{config.grid_size}x{config.grid_size}"
+        elif varying_param == 'n_particles':
+            name = f"Swarm_{config.n_particles}"
+        elif varying_param == 'max_iterations':
+            name = f"Iter_{config.max_iterations}"
+        elif varying_param == 'initial_inertia':
+            name = f"InitW_{config.initial_inertia}"
+        elif varying_param == 'final_inertia':
+            name = f"FinalW_{config.final_inertia}"
+        elif varying_param == 'c1':
+            name = f"C1_{config.c1}"
+        elif varying_param == 'c2':
+            name = f"C2_{config.c2}"
+        else:
+            name = f"Config_{configs.index(config)+1}"
+        
+        # Create new config with updated name
+        updated_config = BPSOConfig(
+            name=name,
+            grid_size=config.grid_size,
+            n_particles=config.n_particles,
+            max_iterations=config.max_iterations,
+            initial_inertia=config.initial_inertia,
+            final_inertia=config.final_inertia,
+            c1=config.c1,
+            c2=config.c2,
+            transfer_func=config.transfer_func
+        )
+        updated_configs.append(updated_config)
+    
+    return updated_configs
+
+# ============================== CONFIGURATION CREATION ============================== #
+def create_configurations() -> List[BPSOConfig]:
+    configs = []
+    for cfg in GlobalConfig.CONFIGS:
+        configs.append(BPSOConfig(
+            name="temp",  # Will be updated by smart naming
+            grid_size=cfg["grid_size"],
+            n_particles=cfg["n_particles"],
+            max_iterations=cfg["max_iterations"],
+            initial_inertia=cfg["initial_inertia"],
+            final_inertia=cfg["final_inertia"],
+            c1=cfg["c1"],
+            c2=cfg["c2"],
+            transfer_func=GlobalConfig.TRANSFER_FUNC
+        ))
+    
+    # Apply smart naming
+    return create_smart_config_names(configs)
+
+def create_target_patterns(configs: List[BPSOConfig]) -> Dict[str, np.ndarray]:
+    """Create random target patterns with more complex structures"""
+    np.random.seed(GlobalConfig.RANDOM_SEED)
+    unique_grids = list(set(c.grid_size for c in configs))
+    
+    targets = {}
+    for grid_size in unique_grids:
+        # Create more complex patterns than just random bits
+        pattern = np.zeros((grid_size, grid_size))
+        
+        # Add some geometric shapes
+        size = grid_size
+        rr, cc = np.ogrid[:size, :size]
+        
+        # Random circles
+        for _ in range(np.random.randint(1, 4)):
+            cx, cy = np.random.randint(0, size, 2)
+            radius = np.random.randint(2, size//3)
+            mask = (rr - cx)**2 + (cc - cy)**2 <= radius**2
+            pattern[mask] = 1
+            
+        # Random rectangles
+        for _ in range(np.random.randint(1, 3)):
+            x1, x2 = sorted(np.random.randint(0, size, 2))
+            y1, y2 = sorted(np.random.randint(0, size, 2))
+            pattern[x1:x2, y1:y2] = 1
+            
+        # Random noise
+        noise_mask = np.random.rand(size, size) < 0.1
+        pattern[noise_mask] = 1 - pattern[noise_mask]
+        
+        # Use the same pattern for all configs with the same grid size
+        for config in configs:
+            if config.grid_size == grid_size:
+                targets[config.name] = pattern
+    
+    return targets
+
+
+
+# ============================== EXPERIMENT RUNNERS ============================== #
+def run_multiple_configs(configs: List[BPSOConfig], targets: Dict[str, np.ndarray]) -> Dict[str, Any]:
+    results = {}
+    for config in configs:
+        runner = BPSORunner(config, targets[config.name])
+        print(f"Running {config.name}...")
+        results[config.name] = runner.run_optimization()
+        print(f"Completed {config.name} | Final Fitness: {results[config.name]['final_fitness']}")
+    return results
+
+def run_multiple_trials(configs: List[BPSOConfig], targets: Dict[str, np.ndarray], n_trials: int) -> Dict[str, Any]:
+    trial_results = {config.name: [] for config in configs}
+    for trial in range(n_trials):
+        print(f"\nTrial {trial+1}/{n_trials}")
+        for config in configs:
+            runner = BPSORunner(config, targets[config.name])
+            result = runner.run_optimization()
+            trial_results[config.name].append(result['final_fitness'])
+            print(f"  {config.name}: {result['final_fitness']}")
+
+    avg_results = {}
+    for name, values in trial_results.items():
+        avg_results[name] = {
+            'average_fitness': np.mean(values),
+            'std_dev': np.std(values),
+            'all_fitness': values
+        }
+    return avg_results
+
+# ============================== PLOTTING ============================== #
+def plot_comparison_results(results, configs):
+    param_analysis = analyze_varying_parameters(configs)
+    varying_param = param_analysis['param_name']
+    
+    fig, axs = plt.subplots(3, 2, figsize=(18, 15))  # Changed to 3x2 grid
+    fig.suptitle(f"BPSO Performance Analysis - Varying {varying_param}", fontsize=GlobalConfig.PLOT_TITLE_FONTSIZE)
+    colors = GlobalConfig.PLOT_COLORS
+    
+    for i, (name, res) in enumerate(results.items()):
+        avg_fit = np.mean(res['fitness_history'], axis=1)
+        best_fit = np.max(res['fitness_history'], axis=1)
+
+        axs[0, 0].plot(avg_fit, label=name, color=colors[i % len(colors)], linewidth=2)
+        axs[0, 1].plot(best_fit, label=name, color=colors[i % len(colors)], linewidth=2)
+        axs[1, 0].plot(res['flip_prob_history'], label=name, color=colors[i % len(colors)], linewidth=2)
+        axs[1, 1].plot(res['flip_count_history'], label=name, color=colors[i % len(colors)], linewidth=2)
+        axs[2, 0].plot(res['diversity_history'], label=name, color=colors[i % len(colors)], linewidth=2)
+        axs[2, 1].plot(res['velocity_variance_history'], label=name, color=colors[i % len(colors)], linewidth=2)
+
+    for ax in axs.flat:
+        ax.grid(True, alpha=0.3)
+        ax.legend()
+
+    axs[0, 0].set_title("Average Fitness")
+    axs[0, 0].set_xlabel("Iteration")
+    axs[0, 0].set_ylabel("Fitness")
+    
+    axs[0, 1].set_title("Best Fitness")
+    axs[0, 1].set_xlabel("Iteration")
+    axs[0, 1].set_ylabel("Fitness")
+    
+    axs[1, 0].set_title("Flip Probability")
+    axs[1, 0].set_xlabel("Iteration")
+    axs[1, 0].set_ylabel("Probability")
+    
+    axs[1, 1].set_title("Flip Count")
+    axs[1, 1].set_xlabel("Iteration")
+    axs[1, 1].set_ylabel("Count")
+    
+    axs[2, 0].set_title("Diversity")
+    axs[2, 0].set_xlabel("Iteration")
+    axs[2, 0].set_ylabel("Diversity")
+    
+    axs[2, 1].set_title("Velocity Variance")
+    axs[2, 1].set_xlabel("Iteration")
+    axs[2, 1].set_ylabel("Variance")
+    
+    plt.tight_layout()
+    plt.show()
+
+def plot_exploration_exploitation(results, configs):
+    """Plot exploration and exploitation percentages with exact ratio info box - robust for any number of configs"""
+    
+    # Calculate dynamic figure size based on number of configs
+    n_configs = len(results)
+    base_width = 14
+    extra_width = max(0, (n_configs - 5) * 0.5)  # Add width for more configs
+    fig_width = min(base_width + extra_width, 20)  # Cap at reasonable size
+    
+    plt.figure(figsize=(fig_width, 8))
+    
+    # Generate extended color palette
+    base_colors = list(GlobalConfig.PLOT_COLORS)
+    # Add more colors if needed
+    extended_colors = base_colors + ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', 
+                                   '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9',
+                                   '#F8C471', '#82E0AA', '#F1948A', '#85929E', '#D5A6BD']
+    
+    # Ensure we have enough colors (cycle through if needed)
+    colors = [extended_colors[i % len(extended_colors)] for i in range(n_configs)]
+    
+    # Create main axis and calculate info box dimensions
+    ax = plt.gca()
+    box_width = min(0.4, 0.25 + n_configs * 0.02)  # Dynamic width based on configs
+    box_ax = ax.inset_axes([1.02, 0.05, box_width, 0.9])  # Taller box
+    box_ax.axis('off')
+    
+    # Prepare data for the info box
+    box_content = []
+    
+    for i, (name, res) in enumerate(results.items()):
+        diversity = np.array(res['diversity_history'])
+        div_max = np.max(diversity) if np.max(diversity) > 0 else 1  # Avoid division by zero
+        
+        # Calculate percentages
+        xpl = (diversity / div_max) * 100  # Exploration
+        xpt = (np.abs(diversity - div_max) / div_max) * 100  # Exploitation
+        
+        # Calculate average percentages
+        avg_xpl = np.mean(xpl)
+        avg_xpt = np.mean(xpt)
+        
+        # Calculate the numerical ratio
+        numerical_ratio = avg_xpl / avg_xpt if avg_xpt != 0 else float('inf')
+        
+        # Format exact percentage ratio with numerical ratio
+        if numerical_ratio == float('inf'):
+            ratio_text = f"{avg_xpl:.1f}% : {avg_xpt:.1f}%, ∞"
+        else:
+            ratio_text = f"{avg_xpl:.1f}% : {avg_xpt:.1f}%, {numerical_ratio:.2f}"
+        
+        # Store for info box
+        box_content.append((name, ratio_text, colors[i]))
+        
+        # Plot the lines with labels
+        iterations = np.arange(len(diversity))
+        ax.plot(iterations, xpl, color=colors[i], 
+               linestyle='--', linewidth=2, alpha=0.8, 
+               label=f'{name} (Exploration)')
+        ax.plot(iterations, xpt, color=colors[i], 
+               linestyle='-', linewidth=2, alpha=0.8,
+               label=f'{name} (Exploitation)')
+    
+    # Create the info box with color coding
+    box_ax.text(0.5, 0.95, "Configuration Analysis", 
+               ha='center', va='top', fontsize=12, fontweight='bold',
+               transform=box_ax.transAxes)
+    box_ax.text(0.5, 0.90, "(Expl% : Expt%, Ratio)", 
+               ha='center', va='top', fontsize=10, style='italic',
+               transform=box_ax.transAxes)
+    
+    # Calculate dynamic spacing
+    available_height = 0.85  # Available height after title
+    spacing = available_height / max(n_configs, 1)
+    rect_height = min(0.04, spacing * 0.4)  # Rectangle height
+    text_size = min(11, max(8, 11 - n_configs * 0.2))  # Dynamic text size
+    
+    # Add colored rectangles and text
+    y_start = 0.85
+    for i, (name, ratio, color) in enumerate(box_content):
+        y_pos = y_start - (i * spacing)
+        
+        # Add colored rectangle
+        box_ax.add_patch(plt.Rectangle((0.05, y_pos - rect_height/2), 0.08, rect_height, 
+                                      facecolor=color, alpha=0.8, 
+                                      edgecolor='black', linewidth=0.5,
+                                      transform=box_ax.transAxes))
+        
+        # Add configuration name (truncate if too long)
+        name_display = name if len(name) <= 12 else name[:12] + "..."
+        box_ax.text(0.15, y_pos, f"{name_display}:", 
+                   fontsize=text_size, fontweight='bold', va='center',
+                   transform=box_ax.transAxes)
+        
+        # Add ratio on next line or same line based on space
+        if spacing > 0.08:  # Enough space for two lines
+            box_ax.text(0.15, y_pos - 0.03, ratio, 
+                       fontsize=max(8, text_size-1), va='center',
+                       transform=box_ax.transAxes)
+        else:  # Single line
+            box_ax.text(0.15, y_pos - 0.015, ratio, 
+                       fontsize=max(7, text_size-2), va='center',
+                       transform=box_ax.transAxes)
+    
+    # Add border to info box
+    box_ax.add_patch(plt.Rectangle((0, 0), 1, 1, fill=False, 
+                                  edgecolor='gray', linewidth=1,
+                                  transform=box_ax.transAxes))
+    
+    # Main plot styling
+    ax.set_title("Exploration vs Exploitation Percentage Analysis", 
+                fontsize=14, fontweight='bold')
+    ax.set_xlabel("Iteration", fontsize=12)
+    ax.set_ylabel("Percentage (%)", fontsize=12)
+    ax.grid(True, alpha=0.3)
+    
+    # Simplified legend for line styles only (avoid overcrowding)
+    from matplotlib.lines import Line2D
+    legend_elements = [
+        Line2D([0], [0], color='gray', linestyle='--', linewidth=2, label='Exploration'),
+        Line2D([0], [0], color='gray', linestyle='-', linewidth=2, label='Exploitation')
+    ]
+    ax.legend(handles=legend_elements, loc='upper left', 
+             title='Line Styles', title_fontsize=10, fontsize=9)
+    
+    # Add informational note
+    note_text = f'→ {n_configs} configurations analyzed'
+    ax.text(0.02, 0.98, note_text, 
+           transform=ax.transAxes, fontsize=10, va='top', 
+           bbox=dict(boxstyle='round,pad=0.3', facecolor='lightblue', alpha=0.7))
+    
+    # Dynamic subplot adjustment based on box width
+    plt.subplots_adjust(right=1 - box_width - 0.02)
+    plt.show()
+
+
+def plot_comparison_results(results, configs):
+    """Enhanced comparison results plot with robust color handling"""
+    param_analysis = analyze_varying_parameters(configs)
+    varying_param = param_analysis['param_name']
+    
+    # Calculate dynamic figure size
+    n_configs = len(results)
+    fig_width = min(18, 14 + n_configs * 0.3)
+    
+    fig, axs = plt.subplots(3, 2, figsize=(fig_width, 15))
+    fig.suptitle(f"BPSO Performance Analysis - Varying {varying_param}", 
+                fontsize=GlobalConfig.PLOT_TITLE_FONTSIZE)
+    
+    # Generate extended color palette
+    base_colors = list(GlobalConfig.PLOT_COLORS)
+    extended_colors = base_colors + ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', 
+                                   '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9',
+                                   '#F8C471', '#82E0AA', '#F1948A', '#85929E', '#D5A6BD']
+    colors = [extended_colors[i % len(extended_colors)] for i in range(n_configs)]
+    
+    for i, (name, res) in enumerate(results.items()):
+        color = colors[i]
+        avg_fit = np.mean(res['fitness_history'], axis=1)
+        best_fit = np.max(res['fitness_history'], axis=1)
+
+        axs[0, 0].plot(avg_fit, label=name, color=color, linewidth=2)
+        axs[0, 1].plot(best_fit, label=name, color=color, linewidth=2)
+        axs[1, 0].plot(res['flip_prob_history'], label=name, color=color, linewidth=2)
+        axs[1, 1].plot(res['flip_count_history'], label=name, color=color, linewidth=2)
+        axs[2, 0].plot(res['diversity_history'], label=name, color=color, linewidth=2)
+        axs[2, 1].plot(res['velocity_variance_history'], label=name, color=color, linewidth=2)
+
+    # Enhanced legend handling
+    for ax in axs.flat:
+        ax.grid(True, alpha=0.3)
+        if n_configs <= 8:  # Show full legend for reasonable number of configs
+            ax.legend(fontsize=8, loc='best')
+        else:  # Show legend only on first subplot to avoid clutter
+            if ax == axs[0, 0]:
+                ax.legend(fontsize=7, loc='best', ncol=min(2, n_configs//4))
+
+    # Subplot titles
+    titles = ["Average Fitness", "Best Fitness", "Flip Probability", 
+              "Flip Count", "Diversity", "Velocity Variance"]
+    ylabels = ["Fitness", "Fitness", "Probability", "Count", "Diversity", "Variance"]
+    
+    for ax, title, ylabel in zip(axs.flat, titles, ylabels):
+        ax.set_title(title)
+        ax.set_xlabel("Iteration")
+        ax.set_ylabel(ylabel)
+    
+    plt.tight_layout()
+    plt.show()
+
+
+def plot_multiple_trial_results(avg_results: Dict[str, Any], configs: List[BPSOConfig]):
+    """Enhanced multiple trial results with robust color and spacing"""
+    param_analysis = analyze_varying_parameters(configs)
+    varying_param = param_analysis['param_name']
+    
+    names = list(avg_results.keys())
+    n_configs = len(names)
+    
+    # Generate extended color palette
+    base_colors = list(GlobalConfig.PLOT_COLORS)
+    extended_colors = base_colors + ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', 
+                                   '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9',
+                                   '#F8C471', '#82E0AA', '#F1948A', '#85929E', '#D5A6BD']
+    colors = [extended_colors[i % len(extended_colors)] for i in range(n_configs)]
+    
+    # Calculate accuracies and errors
+    accuracies = []
+    errors = []
+    
+    for name in names:
+        config = next(c for c in configs if c.name == name)
+        total_cells = config.grid_size ** 2
+        accuracy = avg_results[name]['average_fitness'] / total_cells
+        error = avg_results[name]['std_dev'] / total_cells
+        
+        accuracies.append(accuracy)
+        errors.append(error)
+    
+    # Dynamic figure sizing
+    fig_width = min(16, 10 + n_configs * 0.4)
+    plt.figure(figsize=(fig_width, 6))
+    
+    # Create the bar plot
+    bars = plt.bar(names, accuracies, yerr=errors, capsize=5, 
+                   color=colors, edgecolor='black', alpha=0.8)
+    
+    # Add value labels on top of bars
+    for bar, accuracy in zip(bars, accuracies):
+        height = bar.get_height()
+        plt.text(bar.get_x() + bar.get_width()/2., height + 0.01,
+                f'{accuracy:.3f}', ha='center', va='bottom', fontweight='bold')
+    
+    plt.xlabel(f'{varying_param} Configuration')
+    plt.ylabel('Average Accuracy')
+    plt.title(f'BPSO Performance: Effect of {varying_param} ({n_configs} Configurations)')
+    
+    # Handle x-axis labels for many configurations
+    if n_configs > 10:
+        plt.xticks(rotation=45, ha='right')
+    elif n_configs > 6:
+        plt.xticks(rotation=30)
+    
+    plt.grid(True, axis='y', alpha=0.3)
+    plt.tight_layout()
+    plt.show()
+
+def plot_comparison_results(results, configs):
+    """Enhanced comparison results plot with robust color handling"""
+    param_analysis = analyze_varying_parameters(configs)
+    varying_param = param_analysis['param_name']
+    
+    # Calculate dynamic figure size
+    n_configs = len(results)
+    fig_width = min(18, 14 + n_configs * 0.3)
+    
+    fig, axs = plt.subplots(3, 2, figsize=(fig_width, 15))
+    fig.suptitle(f"BPSO Performance Analysis - Varying {varying_param}", 
+                fontsize=GlobalConfig.PLOT_TITLE_FONTSIZE)
+    
+    # Generate extended color palette
+    base_colors = list(GlobalConfig.PLOT_COLORS)
+    extended_colors = base_colors + ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', 
+                                   '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9',
+                                   '#F8C471', '#82E0AA', '#F1948A', '#85929E', '#D5A6BD']
+    colors = [extended_colors[i % len(extended_colors)] for i in range(n_configs)]
+    
+    for i, (name, res) in enumerate(results.items()):
+        color = colors[i]
+        avg_fit = np.mean(res['fitness_history'], axis=1)
+        best_fit = np.max(res['fitness_history'], axis=1)
+
+        axs[0, 0].plot(avg_fit, label=name, color=color, linewidth=2)
+        axs[0, 1].plot(best_fit, label=name, color=color, linewidth=2)
+        axs[1, 0].plot(res['flip_prob_history'], label=name, color=color, linewidth=2)
+        axs[1, 1].plot(res['flip_count_history'], label=name, color=color, linewidth=2)
+        axs[2, 0].plot(res['diversity_history'], label=name, color=color, linewidth=2)
+        axs[2, 1].plot(res['velocity_variance_history'], label=name, color=color, linewidth=2)
+
+    # Enhanced legend handling
+    for ax in axs.flat:
+        ax.grid(True, alpha=0.3)
+        if n_configs <= 8:  # Show full legend for reasonable number of configs
+            ax.legend(fontsize=8, loc='best')
+        else:  # Show legend only on first subplot to avoid clutter
+            if ax == axs[0, 0]:
+                ax.legend(fontsize=7, loc='best', ncol=min(2, n_configs//4))
+
+    # Subplot titles
+    titles = ["Average Fitness", "Best Fitness", "Flip Probability", 
+              "Flip Count", "Diversity", "Velocity Variance"]
+    ylabels = ["Fitness", "Fitness", "Probability", "Count", "Diversity", "Variance"]
+    
+    for ax, title, ylabel in zip(axs.flat, titles, ylabels):
+        ax.set_title(title)
+        ax.set_xlabel("Iteration")
+        ax.set_ylabel(ylabel)
+    
+    plt.tight_layout()
+    plt.show()
+
+
+def plot_multiple_trial_results(avg_results: Dict[str, Any], configs: List[BPSOConfig]):
+    """Enhanced multiple trial results with robust color and spacing"""
+    param_analysis = analyze_varying_parameters(configs)
+    varying_param = param_analysis['param_name']
+    
+    names = list(avg_results.keys())
+    n_configs = len(names)
+    
+    # Generate extended color palette
+    base_colors = list(GlobalConfig.PLOT_COLORS)
+    extended_colors = base_colors + ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', 
+                                   '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9',
+                                   '#F8C471', '#82E0AA', '#F1948A', '#85929E', '#D5A6BD']
+    colors = [extended_colors[i % len(extended_colors)] for i in range(n_configs)]
+    
+    # Calculate accuracies and errors
+    accuracies = []
+    errors = []
+    
+    for name in names:
+        config = next(c for c in configs if c.name == name)
+        total_cells = config.grid_size ** 2
+        accuracy = avg_results[name]['average_fitness'] / total_cells
+        error = avg_results[name]['std_dev'] / total_cells
+        
+        accuracies.append(accuracy)
+        errors.append(error)
+    
+    # Dynamic figure sizing
+    fig_width = min(16, 10 + n_configs * 0.4)
+    plt.figure(figsize=(fig_width, 6))
+    
+    # Create the bar plot
+    bars = plt.bar(names, accuracies, yerr=errors, capsize=5, 
+                   color=colors, edgecolor='black', alpha=0.8)
+    
+    # Add value labels on top of bars
+    for bar, accuracy in zip(bars, accuracies):
+        height = bar.get_height()
+        plt.text(bar.get_x() + bar.get_width()/2., height + 0.01,
+                f'{accuracy:.3f}', ha='center', va='bottom', fontweight='bold')
+    
+    plt.xlabel(f'{varying_param} Configuration')
+    plt.ylabel('Average Accuracy')
+    plt.title(f'BPSO Performance: Effect of {varying_param} ({n_configs} Configurations)')
+    
+    # Handle x-axis labels for many configurations
+    if n_configs > 10:
+        plt.xticks(rotation=45, ha='right')
+    elif n_configs > 6:
+        plt.xticks(rotation=30)
+    
+    plt.grid(True, axis='y', alpha=0.3)
+    plt.tight_layout()
+    plt.show()
+
+def plot_multiple_trial_results(avg_results: Dict[str, Any], configs: List[BPSOConfig]):
+    param_analysis = analyze_varying_parameters(configs)
+    varying_param = param_analysis['param_name']
+    
+    names = list(avg_results.keys())
+    colors = GlobalConfig.PLOT_COLORS
+    
+    # Calculate accuracies and errors
+    accuracies = []
+    errors = []
+    bar_colors = []
+    
+    for i, name in enumerate(names):
+        config = next(c for c in configs if c.name == name)
+        total_cells = config.grid_size ** 2
+        accuracy = avg_results[name]['average_fitness'] / total_cells
+        error = avg_results[name]['std_dev'] / total_cells
+        
+        accuracies.append(accuracy)
+        errors.append(error)
+        bar_colors.append(colors[i % len(colors)])
+    
+    # Create the bar plot
+    plt.figure(figsize=(12, 6))
+    bars = plt.bar(names, accuracies, yerr=errors, capsize=5, 
+                   color=bar_colors, edgecolor='black', alpha=0.8)
+    
+    # Add value labels on top of bars
+    for bar, accuracy in zip(bars, accuracies):
+        height = bar.get_height()
+        plt.text(bar.get_x() + bar.get_width()/2., height + 0.01,
+                f'{accuracy:.3f}', ha='center', va='bottom', fontweight='bold')
+    
+    plt.xlabel(f'{varying_param} Configuration')
+    plt.ylabel('Average Accuracy')
+    plt.title(f'BPSO Performance: Effect of {varying_param}')
+    plt.xticks(rotation=45)
+    plt.grid(True, axis='y', alpha=0.3)
+    plt.tight_layout()
+    plt.show()
+
+# ============================== MAIN FUNCTION ============================== #
+def print_experiment_settings(configs):
+    param_analysis = analyze_varying_parameters(configs)
+    varying_param = param_analysis['param_name']
+    
+    print("="*80)
+    print("EXPERIMENT CONFIGURATION")
+    print(f"Varying Parameter: {varying_param}")
+    print("-"*80)
+    
+    for i, config in enumerate(configs):
+        print(f"[Config {i+1}] {config.name}")
+        print(f"  Grid: {config.grid_size}x{config.grid_size}, Particles: {config.n_particles}, "
+              f"Iters: {config.max_iterations}")
+        print(f"  Inertia: {config.initial_inertia}→{config.final_inertia}, "
+              f"c1: {config.c1}, c2: {config.c2}")
+    
+    print(f"\nTransfer Function: |tanh(v)|")
+    print(f"Number of trials: {GlobalConfig.N_TRIALS}")
+    print("="*80)
+
+
+
+def main():
+    configs = create_configurations()
+    print_experiment_settings(configs)
+    targets = create_target_patterns(configs)
+    
+    # Plot target patterns
+    plt.figure(figsize=(12, 6))
+    for i, (name, pattern) in enumerate(targets.items()):
+        plt.subplot(1, len(targets), i+1)
+        plt.imshow(pattern, cmap='binary')
+        plt.title(f"Target: {name}")
+    plt.tight_layout()
+    plt.show()
+    
+    results = run_multiple_configs(configs, targets)
+    plot_comparison_results(results, configs)
+    plot_exploration_exploitation(results, configs)
+    avg_results = run_multiple_trials(configs, targets, GlobalConfig.N_TRIALS)
+    plot_multiple_trial_results(avg_results, configs)
+
+if __name__ == '__main__':
+    main()
