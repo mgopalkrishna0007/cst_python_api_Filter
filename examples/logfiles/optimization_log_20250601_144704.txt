@@ -1,0 +1,91 @@
+=== Optimization started at 2025-06-01 14:47:04.526116 ===
+
+Starting binary PSO optimization with parameters:
+Frequency: 28 GHz
+Bandwidth: 4 GHz
+Unit cell size: 15 mm
+Substrate thickness: 0.8 mm
+Pixel grid: 15×15
+MSE threshold: 0.001
+
+Iter | Best f(x) | Mean f(x) | Stall | Inertia | Mutation
+--------------------------------------------------------
+Clearing COM object cache...
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+CST file closed
+Clearing COM object cache...
+COM cache refreshed successfully
+Traceback (most recent call last):
+  File "C:\Users\IDARE_ECE\cst-python-api\examples\sampleBPSO_LD.py", line 839, in <module>
+    results = pyoptimize_te(inputparameters)
+  File "C:\Users\IDARE_ECE\cst-python-api\examples\sampleBPSO_LD.py", line 798, in pyoptimize_te
+    optimizer = BinaryParticleSwarmOptimizer(
+        fun=pso_cost_fn,
+        nvars=nvars,
+        options=options
+    )
+  File "C:\Users\IDARE_ECE\cst-python-api\examples\sampleBPSO_LD.py", line 107, in __init__
+    self._initialize_state()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\IDARE_ECE\cst-python-api\examples\sampleBPSO_LD.py", line 156, in _initialize_state
+    self._evaluate_swarm()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\IDARE_ECE\cst-python-api\examples\sampleBPSO_LD.py", line 160, in _evaluate_swarm
+    self.current_fvals = np.array([self.fun(x) for x in self.positions])
+                                   ~~~~~~~~^^^
+  File "C:\Users\IDARE_ECE\cst-python-api\examples\sampleBPSO_LD.py", line 722, in pso_cost_function
+    te, freq, S = calculate_pcr(matrix, inputparameters)
+                  ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\IDARE_ECE\cst-python-api\examples\sampleBPSO_LD.py", line 668, in calculate_pcr
+    myCST.Build.Shape.addBrick(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        xMin=float(Xblock[0]), xMax=float(Xblock[1]),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        name=name, component="component1", material="PEC"
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\IDARE_ECE\cst-python-api\cst_python_api\Shape.py", line 127, in addBrick
+    result = self.__MWS.AddToHistory("define brick: " + name, vba)
+  File "<COMObject NewMWS>", line 2, in AddToHistory
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "C:\Users\IDARE_ECE\cst-python-api\examples\sampleBPSO_LD.py", line 839, in <module>
+    results = pyoptimize_te(inputparameters)
+  File "C:\Users\IDARE_ECE\cst-python-api\examples\sampleBPSO_LD.py", line 798, in pyoptimize_te
+    optimizer = BinaryParticleSwarmOptimizer(
+        fun=pso_cost_fn,
+        nvars=nvars,
+        options=options
+    )
+  File "C:\Users\IDARE_ECE\cst-python-api\examples\sampleBPSO_LD.py", line 107, in __init__
+    self._initialize_state()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\IDARE_ECE\cst-python-api\examples\sampleBPSO_LD.py", line 156, in _initialize_state
+    self._evaluate_swarm()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\IDARE_ECE\cst-python-api\examples\sampleBPSO_LD.py", line 160, in _evaluate_swarm
+    self.current_fvals = np.array([self.fun(x) for x in self.positions])
+                                   ~~~~~~~~^^^
+  File "C:\Users\IDARE_ECE\cst-python-api\examples\sampleBPSO_LD.py", line 722, in pso_cost_function
+    te, freq, S = calculate_pcr(matrix, inputparameters)
+                  ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\IDARE_ECE\cst-python-api\examples\sampleBPSO_LD.py", line 668, in calculate_pcr
+    myCST.Build.Shape.addBrick(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        xMin=float(Xblock[0]), xMax=float(Xblock[1]),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        name=name, component="component1", material="PEC"
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\IDARE_ECE\cst-python-api\cst_python_api\Shape.py", line 127, in addBrick
+    result = self.__MWS.AddToHistory("define brick: " + name, vba)
+  File "<COMObject NewMWS>", line 2, in AddToHistory
+KeyboardInterrupt

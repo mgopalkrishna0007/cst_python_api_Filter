@@ -1,0 +1,99 @@
+=== Optimization started at 2025-12-09 15:33:45.492120 ===
+
+Starting configurable BPSO optimization with parameters:
+Frequency: 28 GHz
+Bandwidth: 20 GHz
+Unit cell size: 3 mm
+Substrate thickness: 0.8 mm
+Pixel grid: 14×14
+MSE threshold: 1e-07
+Transfer function: v_shape
+
+Iter | Best f(x) | Mean f(x) | Stall | Inertia
+----------------------------------------------
+Clearing COM object cache...
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Error in CST simulation: [WinError 5] Access is denied: 'C:/Users/shivam'
+CST file closed
+Clearing COM object cache...
+COM cache refreshed successfully
+Current MSE: inf
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+CST file closed
+COM cache refreshed successfully
+Traceback (most recent call last):
+  File "E:\GOPAL\cst_python_api_Filter\examples\vpso_LD_polins_datasetgeneration", line 912, in <module>
+    results = pyoptimize_te(inputparameters)
+  File "E:\GOPAL\cst_python_api_Filter\examples\vpso_LD_polins_datasetgeneration", line 848, in pyoptimize_te
+    optimizer = ConfigurableBPSO(
+        fun=pso_cost_fn,
+        nvars=nvars,
+        config=config
+    )
+  File "E:\GOPAL\cst_python_api_Filter\examples\vpso_LD_polins_datasetgeneration", line 508, in __init__
+    self._initialize_swarm()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "E:\GOPAL\cst_python_api_Filter\examples\vpso_LD_polins_datasetgeneration", line 549, in _initialize_swarm
+    self._evaluate_swarm()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "E:\GOPAL\cst_python_api_Filter\examples\vpso_LD_polins_datasetgeneration", line 558, in _evaluate_swarm
+    fitness = self.fun(x)
+  File "E:\GOPAL\cst_python_api_Filter\examples\vpso_LD_polins_datasetgeneration", line 383, in __call__
+    te, freq, S = calculate_pcr(full_matrix, self.inputparameters)
+                  ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOPAL\cst_python_api_Filter\examples\vpso_LD_polins_datasetgeneration", line 298, in calculate_pcr
+    myCST.Build.Shape.addBrick(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        xMin=float(Xblock[0]), xMax=float(Xblock[1]),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        name=name, component="component1", material="PEC"
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "E:\GOPAL\cst_python_api_Filter\cst_python_api\Shape.py", line 127, in addBrick
+    result = self.__MWS.AddToHistory("define brick: " + name, vba)
+  File "<COMObject NewMWS>", line 2, in AddToHistory
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "E:\GOPAL\cst_python_api_Filter\examples\vpso_LD_polins_datasetgeneration", line 912, in <module>
+    results = pyoptimize_te(inputparameters)
+  File "E:\GOPAL\cst_python_api_Filter\examples\vpso_LD_polins_datasetgeneration", line 848, in pyoptimize_te
+    optimizer = ConfigurableBPSO(
+        fun=pso_cost_fn,
+        nvars=nvars,
+        config=config
+    )
+  File "E:\GOPAL\cst_python_api_Filter\examples\vpso_LD_polins_datasetgeneration", line 508, in __init__
+    self._initialize_swarm()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "E:\GOPAL\cst_python_api_Filter\examples\vpso_LD_polins_datasetgeneration", line 549, in _initialize_swarm
+    self._evaluate_swarm()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "E:\GOPAL\cst_python_api_Filter\examples\vpso_LD_polins_datasetgeneration", line 558, in _evaluate_swarm
+    fitness = self.fun(x)
+  File "E:\GOPAL\cst_python_api_Filter\examples\vpso_LD_polins_datasetgeneration", line 383, in __call__
+    te, freq, S = calculate_pcr(full_matrix, self.inputparameters)
+                  ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOPAL\cst_python_api_Filter\examples\vpso_LD_polins_datasetgeneration", line 298, in calculate_pcr
+    myCST.Build.Shape.addBrick(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        xMin=float(Xblock[0]), xMax=float(Xblock[1]),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        name=name, component="component1", material="PEC"
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "E:\GOPAL\cst_python_api_Filter\cst_python_api\Shape.py", line 127, in addBrick
+    result = self.__MWS.AddToHistory("define brick: " + name, vba)
+  File "<COMObject NewMWS>", line 2, in AddToHistory
+KeyboardInterrupt
