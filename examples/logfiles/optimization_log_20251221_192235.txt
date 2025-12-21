@@ -1,0 +1,118 @@
+=== Optimization started at 2025-12-21 19:22:35.596562 ===
+
+============================================================
+BINARY PSO METASURFACE OPTIMIZATION
+============================================================
+Target: Real reflection (S11 → 1 + j0) at 11 GHz and 14 GHz
+Weights: Real priority (w_a=10.0) > Imag (w_b=1.0)
+============================================================
+
+============================================================
+STARTING BPSO OPTIMIZATION
+============================================================
+Frequency range: 12.5 ± 3.0 GHz
+Unit cell size: 2 mm
+Substrate thickness: 0.8 mm
+Pixel grid: 5×5
+Cost threshold: 1e-07
+Target frequencies: [11.0, 14.0] GHz
+Weights: w_a=10.0 (real), w_b=1.0 (imag)
+============================================================
+
+Odd matrix size: 5x5
+Variables with symmetry: 6 (from 25 total)
+
+Initializing swarm...
+
+Iter | Best Cost  | Mean Cost  | Stall | Inertia | Diversity
+-----------------------------------------------------------------
+
+Iteration 0: Evaluating 2 particles
+Clearing COM object cache...
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+Clearing COM object cache...
+COM cache refreshed successfully
+  Particle 0: Cost = 79.431048
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+  Particle 1: Cost = 79.842893
+  *** New global best found: 79.431048 ***
+  Saved JPEG: C:/Users\IDARE_ECE\Desktop\BPSO_Results\iteration_000\iteration_000_best.jpg
+Traceback (most recent call last):
+  File "E:\GOPAL\cst_python_api_Filter\examples\flipVBPSO_dembed_polins.py", line 1107, in <module>
+    results = pyoptimize_te(inputparameters)
+  File "E:\GOPAL\cst_python_api_Filter\examples\flipVBPSO_dembed_polins.py", line 1011, in pyoptimize_te
+    optimizer = ConfigurableBPSO(
+        fun=pso_cost_fn,
+        nvars=nvars,
+        config=config
+    )
+  File "E:\GOPAL\cst_python_api_Filter\examples\flipVBPSO_dembed_polins.py", line 685, in __init__
+    self._initialize_swarm()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "E:\GOPAL\cst_python_api_Filter\examples\flipVBPSO_dembed_polins.py", line 730, in _initialize_swarm
+    self._evaluate_swarm()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "E:\GOPAL\cst_python_api_Filter\examples\flipVBPSO_dembed_polins.py", line 776, in _evaluate_swarm
+    save_iteration_best(
+    ~~~~~~~~~~~~~~~~~~~^
+        self.state['global_best_matrix'],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+        is_global_best=True
+        ^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "E:\GOPAL\cst_python_api_Filter\examples\flipVBPSO_dembed_polins.py", line 546, in save_iteration_best
+    f.write(f"  Phase ∠S11: {s11_data['phase_deg']:.2f}°\n")
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\IDARE_ECE\AppData\Local\Programs\Python\Python313\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u2220' in position 8: character maps to <undefined>
+Traceback (most recent call last):
+  File "E:\GOPAL\cst_python_api_Filter\examples\flipVBPSO_dembed_polins.py", line 1107, in <module>
+    results = pyoptimize_te(inputparameters)
+  File "E:\GOPAL\cst_python_api_Filter\examples\flipVBPSO_dembed_polins.py", line 1011, in pyoptimize_te
+    optimizer = ConfigurableBPSO(
+        fun=pso_cost_fn,
+        nvars=nvars,
+        config=config
+    )
+  File "E:\GOPAL\cst_python_api_Filter\examples\flipVBPSO_dembed_polins.py", line 685, in __init__
+    self._initialize_swarm()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "E:\GOPAL\cst_python_api_Filter\examples\flipVBPSO_dembed_polins.py", line 730, in _initialize_swarm
+    self._evaluate_swarm()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "E:\GOPAL\cst_python_api_Filter\examples\flipVBPSO_dembed_polins.py", line 776, in _evaluate_swarm
+    save_iteration_best(
+    ~~~~~~~~~~~~~~~~~~~^
+        self.state['global_best_matrix'],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+        is_global_best=True
+        ^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "E:\GOPAL\cst_python_api_Filter\examples\flipVBPSO_dembed_polins.py", line 546, in save_iteration_best
+    f.write(f"  Phase ∠S11: {s11_data['phase_deg']:.2f}°\n")
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\IDARE_ECE\AppData\Local\Programs\Python\Python313\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u2220' in position 8: character maps to <undefined>

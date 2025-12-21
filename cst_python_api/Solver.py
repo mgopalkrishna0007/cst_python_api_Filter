@@ -721,6 +721,94 @@ class Solver:
                 "parameters are greater or equal than zero.")
             
         return
+
+
+    def defineFloquetModes_Zmax_deembed(
+            self,
+            nModes: int,
+            fCenter: Union[float, str],
+            theta: Union[float, str] = 0.0,
+            phi: Union[float, str] = 0.0,
+            forcePolar: bool = False,
+            polarAngle: Union[float, str] = 0.0):
+        """
+        Defines Floquet modes with Zmax reference plane set to -λ/4,
+        where λ is computed from the center frequency.
+
+        Wavelength is computed internally in CST (in mm).
+        Zmin reference plane is kept at 0.0.
+        """
+
+        # -------------------- Type checks --------------------
+        if not isinstance(nModes, int):
+            raise TypeError("ERROR: nModes must be of type int.")
+
+        if nModes <= 0:
+            raise ValueError("ERROR: nModes must be greater than zero.")
+
+        if not isinstance(forcePolar, bool):
+            raise TypeError("ERROR: forcePolar must be of type bool.")
+
+        # -------------------- Parameter checking --------------------
+        portParams = {
+            "theta": theta,
+            "phi": phi,
+            "polarAngle": polarAngle,
+            "fCenter": fCenter
+        }
+
+        for key, value in portParams.items():
+            try:
+                portParams[key] = self.__CheckParam.doCheck(value)
+            except TypeError:
+                raise TypeError(f"ERROR: {key} must be of type float or str.")
+            except RuntimeError:
+                raise RuntimeError(
+                    f"ERROR: {key} must reference a parameter already defined in the project"
+                )
+
+        # -------------------- CST expressions --------------------
+        # c0 = speed of light (mm/s)
+        # lambda_mm = c0 / fCenter
+        # Zmax reference plane = -lambda_mm / 4
+
+        lambda_over_4_expr = f'-3e11/(4*{portParams["fCenter"]})'
+
+        # -------------------- VBA generation --------------------
+        vba = (
+            'With FloquetPort\n'
+            '.Reset\n'
+            f'.SetPolarizationIndependentOfScanAnglePhi "{portParams["polarAngle"]}", "{forcePolar}"\n'
+            '.SetSortCode "+beta/pw"\n'
+            '.SetCustomizedListFlag "False"\n'
+            '.Port "Zmin"\n'
+            f'.SetNumberOfModesConsidered "{nModes}"\n'
+            '.SetDistanceToReferencePlane "0.0"\n'
+            '.SetUseCircularPolarization "False"\n'
+            '.Port "Zmax"\n'
+            f'.SetNumberOfModesConsidered "{nModes}"\n'
+            f'.SetDistanceToReferencePlane "{lambda_over_4_expr}"\n'
+            '.SetUseCircularPolarization "False"\n'
+            'End With\n'
+            'With Boundary\n'
+            f'.SetPeriodicBoundaryAngles "{portParams["theta"]}", "{portParams["phi"]}"\n'
+            '.SetPeriodicBoundaryAnglesDirection "outward"\n'
+            'End With'
+        )
+
+        # -------------------- Send to CST --------------------
+        self.__MWS._FlagAsMethod("AddToHistory")
+        result = self.__MWS.AddToHistory(
+            "define Floquet Port boundaries (lambda/4 Zmax)", vba
+        )
+
+        if result is not True:
+            raise RuntimeError(
+                "ERROR: Execution of the VBA code for defining the Floquet port was not successful."
+            )
+
+        return
+
     
     def defineFloquetModes(
         self, nModes: int, theta: Union[float, str]=0.0,
@@ -815,7 +903,7 @@ class Solver:
             '.SetUseCircularPolarization "False"\n' +
             '.Port "Zmax"\n' +
             '.SetNumberOfModesConsidered "{:d}"\n'.format(nModes) +
-            '.SetDistanceToReferencePlane "0.0"\n' +
+            '.SetDistanceToReferencePlane "-0.95"\n' +
             '.SetUseCircularPolarization "False"\n' +
             'End With\n'
             'With Boundary\n' +

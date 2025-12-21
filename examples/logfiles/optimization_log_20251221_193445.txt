@@ -1,0 +1,359 @@
+=== Optimization started at 2025-12-21 19:34:45.690019 ===
+
+============================================================
+BINARY PSO METASURFACE OPTIMIZATION
+============================================================
+Target: Real reflection (S11 → 1 + j0) at 11 GHz and 14 GHz
+Weights: Real priority (w_a=1.0)  Imag (w_b=1.0)
+============================================================
+
+============================================================
+STARTING BPSO OPTIMIZATION
+============================================================
+Frequency range: 12.5 ± 3.0 GHz
+Unit cell size: 2 mm
+Substrate thickness: 0.8 mm
+Pixel grid: 5×5
+Cost threshold: 1e-07
+Target frequencies: [11.0, 14.0] GHz
+Weights: w_a=1.0 (real), w_b=1.0 (imag)
+============================================================
+
+Odd matrix size: 5x5
+Variables with symmetry: 6 (from 25 total)
+
+Initializing swarm...
+
+Iter | Best Cost  | Mean Cost  | Stall | Inertia | Diversity
+-----------------------------------------------------------------
+
+Iteration 0: Evaluating 2 particles
+Clearing COM object cache...
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+Clearing COM object cache...
+COM cache refreshed successfully
+  Particle 0: Cost = 7.987610
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+  Particle 1: Cost = 7.994261
+  *** New global best found: 7.987610 ***
+  Saved JPEG: C:/Users\IDARE_ECE\Desktop\BPSO_Results\iteration_000\iteration_000_best.jpg
+  Saved TXT: C:/Users\IDARE_ECE\Desktop\BPSO_Results\iteration_000\iteration_000_best.txt
+   0 |   7.987610 |   7.990936 |     0 |   1.200 | 0.5000
+
+Starting optimization loop...
+
+Iteration 1: Evaluating 2 particles
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+  Particle 0: Cost = 7.587092
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+  Particle 1: Cost = 7.987610
+  *** New global best found: 7.587092 ***
+  Saved JPEG: C:/Users\IDARE_ECE\Desktop\BPSO_Results\iteration_001\iteration_001_best.jpg
+  Saved TXT: C:/Users\IDARE_ECE\Desktop\BPSO_Results\iteration_001\iteration_001_best.txt
+   1 |   7.587092 |   7.787351 |     0 |   1.090 | 0.4363
+
+Iteration 2: Evaluating 2 particles
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+  Particle 0: Cost = 7.590032
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+  Particle 1: Cost = 7.608216
+  Saved JPEG: C:/Users\IDARE_ECE\Desktop\BPSO_Results\iteration_002\iteration_002_best.jpg
+  Saved TXT: C:/Users\IDARE_ECE\Desktop\BPSO_Results\iteration_002\iteration_002_best.txt
+   2 |   7.587092 |   7.599124 |     1 |   0.980 | 0.1863
+
+Iteration 3: Evaluating 2 particles
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+  Particle 0: Cost = 7.998639
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+  Particle 1: Cost = 7.998564
+  Saved JPEG: C:/Users\IDARE_ECE\Desktop\BPSO_Results\iteration_003\iteration_003_best.jpg
+  Saved TXT: C:/Users\IDARE_ECE\Desktop\BPSO_Results\iteration_003\iteration_003_best.txt
+   3 |   7.587092 |   7.998601 |     2 |   0.870 | 0.4220
+
+Iteration 4: Evaluating 2 particles
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+  Particle 0: Cost = 7.964795
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+  Particle 1: Cost = 7.435207
+  *** New global best found: 7.435207 ***
+  Saved JPEG: C:/Users\IDARE_ECE\Desktop\BPSO_Results\iteration_004\iteration_004_best.jpg
+  Saved TXT: C:/Users\IDARE_ECE\Desktop\BPSO_Results\iteration_004\iteration_004_best.txt
+   4 |   7.435207 |   7.700001 |     0 |   0.760 | 0.5000
+
+Iteration 5: Evaluating 2 particles
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+  Particle 0: Cost = 7.969682
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+  Particle 1: Cost = 7.999940
+  Saved JPEG: C:/Users\IDARE_ECE\Desktop\BPSO_Results\iteration_005\iteration_005_best.jpg
+  Saved TXT: C:/Users\IDARE_ECE\Desktop\BPSO_Results\iteration_005\iteration_005_best.txt
+   5 |   7.435207 |   7.984811 |     1 |   0.650 | 0.4363
+
+Iteration 6: Evaluating 2 particles
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+  Particle 0: Cost = 7.999999
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+  Particle 1: Cost = 7.999627
+  Saved JPEG: C:/Users\IDARE_ECE\Desktop\BPSO_Results\iteration_006\iteration_006_best.jpg
+  Saved TXT: C:/Users\IDARE_ECE\Desktop\BPSO_Results\iteration_006\iteration_006_best.txt
+   6 |   7.435207 |   7.999813 |     2 |   0.540 | 0.4220
+
+Iteration 7: Evaluating 2 particles
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+  Particle 0: Cost = 7.999443
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+  Particle 1: Cost = 7.998639
+  Saved JPEG: C:/Users\IDARE_ECE\Desktop\BPSO_Results\iteration_007\iteration_007_best.jpg
+  Saved TXT: C:/Users\IDARE_ECE\Desktop\BPSO_Results\iteration_007\iteration_007_best.txt
+   7 |   7.435207 |   7.999041 |     3 |   0.430 | 0.4220
+
+Iteration 8: Evaluating 2 particles
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+  Particle 0: Cost = 7.999990
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+  Particle 1: Cost = 7.991596
+  Saved JPEG: C:/Users\IDARE_ECE\Desktop\BPSO_Results\iteration_008\iteration_008_best.jpg
+  Saved TXT: C:/Users\IDARE_ECE\Desktop\BPSO_Results\iteration_008\iteration_008_best.txt
+   8 |   7.435207 |   7.995793 |     4 |   0.320 | 0.2500
+
+Iteration 9: Evaluating 2 particles
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+  Particle 0: Cost = 7.984987
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+  Particle 1: Cost = 7.999558
+  Saved JPEG: C:/Users\IDARE_ECE\Desktop\BPSO_Results\iteration_009\iteration_009_best.jpg
+  Saved TXT: C:/Users\IDARE_ECE\Desktop\BPSO_Results\iteration_009\iteration_009_best.txt
+   9 |   7.435207 |   7.992273 |     5 |   0.210 | 0.4220
+
+Iteration 10: Evaluating 2 particles
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+  Particle 0: Cost = 7.998639
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+  Particle 1: Cost = 7.998639
+  Saved JPEG: C:/Users\IDARE_ECE\Desktop\BPSO_Results\iteration_010\iteration_010_best.jpg
+  Saved TXT: C:/Users\IDARE_ECE\Desktop\BPSO_Results\iteration_010\iteration_010_best.txt
+  10 |   7.435207 |   7.998639 |     6 |   0.100 | 0.3727
+
+============================================================
+SWARM DATA SAVED SUCCESSFULLY
+============================================================
+File: E:\GOPAL\cst_python_api_Filter\examples\5x5@2_2_polins\swarm_data.pckl
+Timestamp: 20251221_194928
+Total particles evaluated: 22
+Total iterations: 10
+Best cost achieved: 7.435207
+============================================================
+
+Summary saved as JSON: 5x5@2_2_polins\optimization_summary.json
+
+============================================================
+OPTIMIZATION COMPLETED
+============================================================
+Optimal Cost: 7.435207
+Exit condition: Maximum iterations reached
+Function evaluations: 22
+Iterations: 10
+Optimization time: 882.80 seconds
+
+FINAL S11 VALUES AT TARGET FREQUENCIES:
+--------------------------------------------------
+11.0 GHz:
+  Real (a): -0.907725 (error: 1.907725)
+  Imag (b): 0.415435 (error: 0.415435)
+  Magnitude |S11|: 0.998273
+  Phase ∠S11: 155.41°
+  Target: 1.0 + j0.0 (|S11|=1.0, ∠S11=0.0°)
+14.0 GHz:
+  Real (a): -0.816025 (error: 1.816025)
+  Imag (b): 0.570318 (error: 0.570318)
+  Magnitude |S11|: 0.995569
+  Phase ∠S11: 145.05°
+  Target: 1.0 + j0.0 (|S11|=1.0, ∠S11=0.0°)
+
+Final results saved to: C:/Users\IDARE_ECE\Desktop\BPSO_Results\final_results
+Swarm data saved to: 5x5@2_2_polins\swarm_data.pckl
+============================================================
+
+OPTIMIZATION SUMMARY:
+----------------------------------------
+Best cost achieved: 7.435207
+Swarm data file: 5x5@2_2_polins\swarm_data.pckl
+Results folder: C:/Users\IDARE_ECE\Desktop\BPSO_Results\final_results
+Iteration results: C:/Users/IDARE_ECE/Desktop/BPSO_Results/
+
+Optimization complete!

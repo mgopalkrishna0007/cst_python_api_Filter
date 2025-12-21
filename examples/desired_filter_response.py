@@ -2,16 +2,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Constants
-f0 = 28e9 # Center frequency (Hz)
+f0 = 12.50e9 # Center frequency (Hz)
 FBW = 0.03 # Fractional bandwidth
 BW = f0 * FBW
 
-fmin = 23e9
-fmax = 33e9
+fmin = 11e9
+fmax = 14e9
 fstep = 1e6
 f = np.arange(fmin, fmax + fstep, fstep)
 
-N =   1 # Filter order
+N =   3 # Filter order
 
 Lr_dB = -30  # Reflection coefficient in dB
 Lar = -10 * np.log10(1 - 10**(0.1 * Lr_dB))  # Passband ripple from Lr
@@ -78,12 +78,22 @@ axs[0, 1].set_title("|S21| (dB)")
 axs[0, 1].set_xlabel("Frequency (GHz)")
 axs[0, 1].set_ylabel("Magnitude (dB)")
 
+# axs[1, 0].plot(freq_GHz, np.unwrap(np.angle(S11)), linewidth=2)
+# axs[1, 0].set_title("|S11| (abs)")
+# axs[1, 0].set_xlabel("Frequency (GHz)")
+# axs[1, 0].set_ylabel("Magnitude")
+
+# axs[1, 1].plot(freq_GHz, np.unwrap(np.angle(S21)), linewidth=2)
+# axs[1, 1].set_title("|S21| (abs)")
+# axs[1, 1].set_xlabel("Frequency (GHz)")
+# axs[1, 1].set_ylabel("Magnitude")
+
 axs[1, 0].plot(freq_GHz, np.abs(S11), linewidth=2)
 axs[1, 0].set_title("|S11| (abs)")
 axs[1, 0].set_xlabel("Frequency (GHz)")
 axs[1, 0].set_ylabel("Magnitude")
 
-axs[1, 1].plot(freq_GHz, 1 - np.abs(S21), linewidth=2)
+axs[1, 1].plot(freq_GHz, np.abs(S21), linewidth=2)
 axs[1, 1].set_title("|S21| (abs)")
 axs[1, 1].set_xlabel("Frequency (GHz)")
 axs[1, 1].set_ylabel("Magnitude")

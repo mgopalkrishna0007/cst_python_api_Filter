@@ -1,0 +1,300 @@
+=== Optimization started at 2025-12-21 19:01:37.365330 ===
+
+Starting configurable BPSO optimization with parameters:
+Frequency: 12.5 GHz
+Bandwidth: 6 GHz
+Unit cell size: 2 mm
+Substrate thickness: 0.8 mm
+Pixel grid: 7×7
+Cost threshold: 1e-07
+Target frequencies: [11.0, 14.0] GHz
+Weights: w_a=10.0, w_b=1.0
+
+Iter | Best f(x) | Mean f(x) | Stall | Inertia | Diversity
+----------------------------------------------------------
+Clearing COM object cache...
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+Clearing COM object cache...
+COM cache refreshed successfully
+Current Cost: 79.874817
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+   0 | 79.874817 |     79.87 |     0 |  1.200 | 0.0000
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+Current Cost: 72.410355
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+   1 | 72.410355 |     72.41 |     0 |  1.145 | 0.0000
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+Current Cost: 66.561821
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+   2 | 66.561821 |     66.56 |     0 |  1.090 | 0.0000
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+Current Cost: 79.936203
+   3 | 66.561821 |     79.94 |     1 |  1.035 | 0.0000
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+Current Cost: 79.899644
+   4 | 66.561821 |     79.90 |     2 |  0.980 | 0.0000
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+Current Cost: 79.950335
+   5 | 66.561821 |     79.95 |     3 |  0.925 | 0.0000
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+Current Cost: 71.700712
+   6 | 66.561821 |     71.70 |     4 |  0.870 | 0.0000
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+Current Cost: 70.091740
+   7 | 66.561821 |     70.09 |     5 |  0.815 | 0.0000
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+Current Cost: 71.506756
+   8 | 66.561821 |     71.51 |     6 |  0.760 | 0.0000
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+Current Cost: 79.965253
+   9 | 66.561821 |     79.97 |     7 |  0.705 | 0.0000
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+Current Cost: 79.983049
+  10 | 66.561821 |     79.98 |     8 |  0.650 | 0.0000
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+Current Cost: 79.999431
+  11 | 66.561821 |     80.00 |     9 |  0.595 | 0.0000
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+Current Cost: 79.303179
+  12 | 66.561821 |     79.30 |    10 |  0.540 | 0.0000
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+Current Cost: 79.998429
+  13 | 66.561821 |     80.00 |    11 |  0.485 | 0.0000
+Configuration already exists, skipping simulation
+  14 | 66.561821 |     79.30 |    12 |  0.430 | 0.0000
+Configuration already exists, skipping simulation
+  15 | 66.561821 |     80.00 |    13 |  0.375 | 0.0000
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+Current Cost: 71.565667
+  16 | 66.561821 |     71.57 |    14 |  0.320 | 0.0000
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+Current Cost: 79.988463
+  17 | 66.561821 |     79.99 |    15 |  0.265 | 0.0000
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+Current Cost: 67.282143
+  18 | 66.561821 |     67.28 |    16 |  0.210 | 0.0000
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+Current Cost: 79.986891
+  19 | 66.561821 |     79.99 |    17 |  0.155 | 0.0000
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+Current Cost: 79.752799
+  20 | 66.561821 |     79.75 |    18 |  0.100 | 0.0000
+
+==================================================
+Saved all particles data to: E:\GOPAL\cst_python_api_Filter\examples\7x7@2_1_polins\all_particles_data.pkl
+
+Data shapes:
+Position vector: 10 elements
+Full matrix: 7x7
+S11 values at 2 frequencies
+==================================================
+
+Swarm data saved to swarm_data.pckl
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+
+Optimization results:
+Optimal Cost: 66.5618214697686
+Exit condition: Maximum iterations reached
+Function evaluations: 21
+Iterations: 20
+Optimization time: 1148.76 seconds
+
+S11 values at target frequencies:
+11.0 GHz:
+  Real: -0.888234 (target: 1.0)
+  Imag: 0.452725 (target: 0.0)
+  Magnitude: 0.996955
+  Phase: 152.99° (target: 0.0°)
+14.0 GHz:
+  Real: -0.739774 (target: 1.0)
+  Imag: 0.659105 (target: 0.0)
+  Magnitude: 0.990801
+  Phase: 138.30° (target: 0.0°)
+
+Solution summary:
+Below cost threshold (1e-07): 0
+
+Optimization completed.

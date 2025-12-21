@@ -1,0 +1,167 @@
+=== Optimization started at 2025-12-21 20:16:38.981986 ===
+
+============================================================
+BINARY PSO METASURFACE OPTIMIZATION
+============================================================
+Target: Real reflection (S11 → 1 + j0) at 11 GHz and 14 GHz
+Weights: Real priority (w_a=1.0)  Imag (w_b=1.0)
+============================================================
+
+============================================================
+STARTING BPSO OPTIMIZATION
+============================================================
+Frequency range: 12.5 ± 5.0 GHz
+Unit cell size: 5 mm
+Substrate thickness: 0.8 mm
+Pixel grid: 12×12
+Cost threshold: 0.0
+Target frequencies: [11.0, 14.0] GHz
+Weights: w_a=1.0 (real), w_b=1.0 (imag)
+============================================================
+
+Even matrix size: 12x12
+Variables with symmetry: 21 (from 144 total)
+
+Initializing swarm...
+
+Iter | Best Cost  | Mean Cost  | Stall | Inertia | Diversity
+-----------------------------------------------------------------
+
+Iteration 0: Evaluating 2 particles
+Clearing COM object cache...
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+Clearing COM object cache...
+COM cache refreshed successfully
+  Particle 0: Cost = 7.326011
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+  Particle 1: Cost = 7.400648
+  *** New global best found: 7.326011 ***
+  Saved GLOBAL BEST JPEG: C:/Users\IDARE_ECE\Desktop\BPSO_Results\iteration_000\iteration_000_global_best.jpg
+  Saved TXT: C:/Users\IDARE_ECE\Desktop\BPSO_Results\iteration_000\iteration_000_global_best.txt
+   0 |   7.326011 |   7.363330 |     0 |   1.200 | 0.4856
+
+Starting optimization loop...
+
+Iteration 1: Evaluating 2 particles
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+  Particle 0: Cost = 7.846211
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+  Particle 1: Cost = 7.985671
+  Saved GLOBAL BEST JPEG: C:/Users\IDARE_ECE\Desktop\BPSO_Results\iteration_001\iteration_001_global_best.jpg
+  Saved TXT: C:/Users\IDARE_ECE\Desktop\BPSO_Results\iteration_001\iteration_001_global_best.txt
+   1 |   7.326011 |   7.915941 |     1 |   1.090 | 0.4925
+
+Iteration 2: Evaluating 2 particles
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+  Particle 0: Cost = 7.920545
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+  Particle 1: Cost = 3.702503
+  *** New global best found: 3.702503 ***
+  Saved GLOBAL BEST JPEG: C:/Users\IDARE_ECE\Desktop\BPSO_Results\iteration_002\iteration_002_global_best.jpg
+  Saved TXT: C:/Users\IDARE_ECE\Desktop\BPSO_Results\iteration_002\iteration_002_global_best.txt
+   2 |   3.702503 |   5.811524 |     0 |   0.980 | 0.4756
+
+Iteration 3: Evaluating 2 particles
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+CST file closed
+COM cache refreshed successfully
+Traceback (most recent call last):
+  File "E:\GOPAL\cst_python_api_Filter\examples\flipVBPSO_dembed_polins.py", line 1126, in <module>
+    results_storage['best_solution'] = {
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOPAL\cst_python_api_Filter\examples\flipVBPSO_dembed_polins.py", line 1037, in pyoptimize_te
+    print(f"Variables with symmetry: {nvars} (from {nPix*nPix} total)")
+          ^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOPAL\cst_python_api_Filter\examples\flipVBPSO_dembed_polins.py", line 858, in optimize
+    social = c2 * r2 * (self.state['global_best_position'] - self.positions)
+        ^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOPAL\cst_python_api_Filter\examples\flipVBPSO_dembed_polins.py", line 740, in _evaluate_swarm
+    'inertia': self.config.w_initial,
+              ^^^^^^^^^^^
+  File "E:\GOPAL\cst_python_api_Filter\examples\flipVBPSO_dembed_polins.py", line 621, in __call__
+    c = nPix // 2
+    
+  File "E:\GOPAL\cst_python_api_Filter\examples\flipVBPSO_dembed_polins.py", line 289, in calculate_pcr
+    myCST.Build.Shape.addBrick(
+    ^^^^^^^^^^^^^^^^
+  File "E:\GOPAL\cst_python_api_Filter\cst_python_api\Solver.py", line 932, in runSimulation
+    self.__MWS.RunSolver()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "<COMObject NewMWS>", line 2, in RunSolver
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "E:\GOPAL\cst_python_api_Filter\examples\flipVBPSO_dembed_polins.py", line 1126, in <module>
+    results_storage['best_solution'] = {
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOPAL\cst_python_api_Filter\examples\flipVBPSO_dembed_polins.py", line 1037, in pyoptimize_te
+    print(f"Variables with symmetry: {nvars} (from {nPix*nPix} total)")
+          ^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOPAL\cst_python_api_Filter\examples\flipVBPSO_dembed_polins.py", line 858, in optimize
+    social = c2 * r2 * (self.state['global_best_position'] - self.positions)
+        ^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOPAL\cst_python_api_Filter\examples\flipVBPSO_dembed_polins.py", line 740, in _evaluate_swarm
+    'inertia': self.config.w_initial,
+              ^^^^^^^^^^^
+  File "E:\GOPAL\cst_python_api_Filter\examples\flipVBPSO_dembed_polins.py", line 621, in __call__
+    c = nPix // 2
+    
+  File "E:\GOPAL\cst_python_api_Filter\examples\flipVBPSO_dembed_polins.py", line 289, in calculate_pcr
+    myCST.Build.Shape.addBrick(
+    ^^^^^^^^^^^^^^^^
+  File "E:\GOPAL\cst_python_api_Filter\cst_python_api\Solver.py", line 932, in runSimulation
+    self.__MWS.RunSolver()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "<COMObject NewMWS>", line 2, in RunSolver
+KeyboardInterrupt

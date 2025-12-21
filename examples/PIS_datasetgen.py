@@ -22,11 +22,11 @@ from multiprocessing import Pool, cpu_count
 import os
 # Input parameters
 inputparameters = [
-    2,      # center frequency (GHz)
+    79,      # center frequency (GHz)
     20,      # bandwidth (GHz)
-    5,       # dimension of unit cell (mm)
+    2,       # dimension of unit cell (mm)
     0.8,     # width of pixel (mm)
-    8,       # number of pixels (npix)
+    9,       # number of pixels (npix)
     0.0000001, # target mean squared error (MSE)
     0        # substrate type index
 ]

@@ -1,0 +1,99 @@
+=== Optimization started at 2025-12-21 17:05:57.153005 ===
+
+Starting configurable BPSO optimization with parameters:
+Frequency: 12.5 GHz
+Bandwidth: 6 GHz
+Unit cell size: 2 mm
+Substrate thickness: 0.8 mm
+Pixel grid: 7×7
+MSE threshold: 1e-07
+
+Iter | Best f(x) | Mean f(x) | Stall | Inertia | Diversity
+----------------------------------------------------------
+Clearing COM object cache...
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+Clearing COM object cache...
+COM cache refreshed successfully
+Current MSE: 0.076972
+Saved plot to: C:\Users\IDARE_ECE\Desktop\BPSO_Results\Iteration_0\best_1\configuration_plot.jpg
+   0 |  0.076972 |      0.08 |     0 |  1.200 | 0.0000
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+Current MSE: 0.076578
+Saved plot to: C:\Users\IDARE_ECE\Desktop\BPSO_Results\Iteration_1\best_1\configuration_plot.jpg
+   1 |  0.076578 |      0.08 |     0 |  0.980 | 0.0000
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+Current MSE: 0.077128
+Saved plot to: C:\Users\IDARE_ECE\Desktop\BPSO_Results\Iteration_2\best_1\configuration_plot.jpg
+   2 |  0.076578 |      0.08 |     1 |  0.760 | 0.0000
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+Current MSE: 0.076663
+Saved plot to: C:\Users\IDARE_ECE\Desktop\BPSO_Results\Iteration_3\best_1\configuration_plot.jpg
+   3 |  0.076578 |      0.08 |     2 |  0.540 | 0.0000
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+Current MSE: 0.076709
+Saved plot to: C:\Users\IDARE_ECE\Desktop\BPSO_Results\Iteration_4\best_1\configuration_plot.jpg
+   4 |  0.076578 |      0.08 |     3 |  0.320 | 0.0000
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+Current MSE: 0.076709
+Saved plot to: C:\Users\IDARE_ECE\Desktop\BPSO_Results\Iteration_5\best_1\configuration_plot.jpg
+   5 |  0.076578 |      0.08 |     4 |  0.100 | 0.0000
+
+Aggregated data saved to: C:\Users\IDARE_ECE\Desktop\BPSO_Results\bpso_results.pkl
+Total unique configurations saved: 3
+
+Optimization results:
+Optimal MSE: 0.07657810291302816
+Exit condition: Maximum iterations reached
+Function evaluations: 6
+Iterations: 5
+Unique configurations found: 3
+Optimization time: 318.35 seconds
+
+Optimization completed successfully.

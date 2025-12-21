@@ -41,8 +41,15 @@ def calculate_pcr(matrix, inputparameters):
     try:
         projectName = "filtermetasurface"
         myCST = cpa.CST_MicrowaveStudio(context.dataFolder, projectName + ".cst")
-                
-        myCST.Solver.defineFloquetModes(nModes=2, theta=0.0, phi=0.0, forcePolar=False, polarAngle=0.0)
+        dembed_centrefreq= float(frequency * 1e9)        
+        # myCST.Solver.defineFloquetModes(nModes=2, theta=0.0, phi=0.0, forcePolar=False, polarAngle=0.0)
+        frequency = float(inputparameters[0])
+        myCST.Solver.defineFloquetModes_Zmax_deembed(
+            nModes=2,
+            fCenter=dembed_centrefreq,
+            theta=0.0,
+            phi=0.0
+        )
         myCST.Solver.setBoundaryCondition(
             xMin="unit cell", xMax="unit cell",
             yMin="unit cell", yMax="unit cell",
@@ -68,7 +75,13 @@ def calculate_pcr(matrix, inputparameters):
             # name="Substrate", component="component1", material= "Rogers RO4003C (lossy)"
             name="Substrate", component="component1", material="FR4 (Lossy)"
         )
-        
+        myCST.Build.Shape.addBrick(
+            xMin=0.0, xMax=unitcellsize,
+            yMin=0.0, yMax=unitcellsize,
+            zMin=0.0, zMax=0.0,
+            # name="Substrate", component="component1", material= "Rogers RO4003C (lossy)"
+            name="Substrate", component="component2", material="PEC"
+        )        
         ii = 0
         Zblock = [substrateThickness, substrateThickness]
         for i1 in range(nPix):
@@ -87,7 +100,7 @@ def calculate_pcr(matrix, inputparameters):
                     )
         
         # Save with unique name
-        save_path = r"C:/Users/User/Documents/saved_cst_projects/"
+        save_path = r"C:/Users/IDARE_ECE/Documents/saved_cst_projects/"
         save_file_name = "filtermetasurface.cst"
         if not os.path.exists(save_path):
             os.makedirs(save_path)
@@ -397,5 +410,3 @@ plt.grid(True, alpha=0.3)
 plt.tight_layout()
 plt.show()
 plt.close()
-
-print(f"Plot completed. Data saved to: {csv_path}")

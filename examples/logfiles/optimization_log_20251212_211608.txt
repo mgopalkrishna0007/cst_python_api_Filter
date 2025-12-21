@@ -1,0 +1,163 @@
+=== Optimization started at 2025-12-12 21:16:08.340181 ===
+
+Starting configurable BPSO optimization with parameters:
+Frequency: 12.5 GHz
+Bandwidth: 6 GHz
+Unit cell size: 2 mm
+Substrate thickness: 0.8 mm
+Pixel grid: 7×7
+MSE threshold: 1e-07
+Transfer function: 1 - exp(-k*|v|/2)
+
+Iter | Best f(x) | Mean f(x) | Stall | Inertia | Diversity
+----------------------------------------------------------
+Clearing COM object cache...
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+Clearing COM object cache...
+COM cache refreshed successfully
+Current MSE: 0.997354
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+   0 |  0.997354 |      1.00 |     0 |  1.200 | 0.0000
+COM cache refreshed successfully
+
+Running CST simulation...
+CPA: The specified project does not exist. A new project hasbeen created.
+Do not forget to use CST_MicrowaveStudio.saveFile() to save your project.
+Running solver
+Simulation completed successfully
+CST file closed
+COM cache refreshed successfully
+Current MSE: 0.997621
+Traceback (most recent call last):
+  File "E:\GOPAL\cst_python_api_Filter\examples\VPSO_POLINS_LD_datasetgeneration_2.py", line 1178, in <module>
+    results = pyoptimize_te(inputparameters)
+  File "E:\GOPAL\cst_python_api_Filter\examples\VPSO_POLINS_LD_datasetgeneration_2.py", line 1120, in pyoptimize_te
+    results = optimizer.optimize()
+  File "E:\GOPAL\cst_python_api_Filter\examples\VPSO_POLINS_LD_datasetgeneration_2.py", line 775, in optimize
+    self._evaluate_swarm()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "E:\GOPAL\cst_python_api_Filter\examples\VPSO_POLINS_LD_datasetgeneration_2.py", line 693, in _evaluate_swarm
+    self._generate_plots()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "E:\GOPAL\cst_python_api_Filter\examples\VPSO_POLINS_LD_datasetgeneration_2.py", line 967, in _generate_plots
+    plt.savefig(summary_path, dpi=300, bbox_inches='tight')
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\IDARE_ECE\AppData\Local\Programs\Python\Python313\Lib\site-packages\matplotlib\pyplot.py", line 1251, in savefig
+    res = fig.savefig(*args, **kwargs)  # type: ignore[func-returns-value]
+  File "C:\Users\IDARE_ECE\AppData\Local\Programs\Python\Python313\Lib\site-packages\matplotlib\figure.py", line 3490, in savefig
+    self.canvas.print_figure(fname, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\IDARE_ECE\AppData\Local\Programs\Python\Python313\Lib\site-packages\matplotlib\backend_bases.py", line 2155, in print_figure
+    self.figure.draw(renderer)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\IDARE_ECE\AppData\Local\Programs\Python\Python313\Lib\site-packages\matplotlib\artist.py", line 94, in draw_wrapper
+    result = draw(artist, renderer, *args, **kwargs)
+  File "C:\Users\IDARE_ECE\AppData\Local\Programs\Python\Python313\Lib\site-packages\matplotlib\artist.py", line 71, in draw_wrapper
+    return draw(artist, renderer)
+  File "C:\Users\IDARE_ECE\AppData\Local\Programs\Python\Python313\Lib\site-packages\matplotlib\figure.py", line 3257, in draw
+    mimage._draw_list_compositing_images(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        renderer, self, artists, self.suppressComposite)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\IDARE_ECE\AppData\Local\Programs\Python\Python313\Lib\site-packages\matplotlib\image.py", line 134, in _draw_list_compositing_images
+    a.draw(renderer)
+    ~~~~~~^^^^^^^^^^
+  File "C:\Users\IDARE_ECE\AppData\Local\Programs\Python\Python313\Lib\site-packages\matplotlib\artist.py", line 71, in draw_wrapper
+    return draw(artist, renderer)
+  File "C:\Users\IDARE_ECE\AppData\Local\Programs\Python\Python313\Lib\site-packages\matplotlib\axes\_base.py", line 3180, in draw
+    self._update_title_position(renderer)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\IDARE_ECE\AppData\Local\Programs\Python\Python313\Lib\site-packages\matplotlib\axes\_base.py", line 3134, in _update_title_position
+    if title.get_window_extent(renderer).ymin < top:
+       ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\IDARE_ECE\AppData\Local\Programs\Python\Python313\Lib\site-packages\matplotlib\text.py", line 957, in get_window_extent
+    return Bbox.from_bounds(tx, ty, 0, 0)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\IDARE_ECE\AppData\Local\Programs\Python\Python313\Lib\site-packages\matplotlib\transforms.py", line 802, in from_bounds
+    return Bbox.from_extents(x0, y0, x0 + width, y0 + height)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\IDARE_ECE\AppData\Local\Programs\Python\Python313\Lib\site-packages\matplotlib\transforms.py", line 820, in from_extents
+    bbox = Bbox(np.reshape(args, (2, 2)))
+                ~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\IDARE_ECE\AppData\Local\Programs\Python\Python313\Lib\site-packages\numpy\_core\fromnumeric.py", line 324, in reshape
+    return _wrapfunc(a, 'reshape', shape, order=order)
+  File "C:\Users\IDARE_ECE\AppData\Local\Programs\Python\Python313\Lib\site-packages\numpy\_core\fromnumeric.py", line 54, in _wrapfunc
+    return _wrapit(obj, method, *args, **kwds)
+  File "C:\Users\IDARE_ECE\AppData\Local\Programs\Python\Python313\Lib\site-packages\numpy\_core\fromnumeric.py", line 41, in _wrapit
+    def _wrapit(obj, method, *args, **kwds):
+    
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "E:\GOPAL\cst_python_api_Filter\examples\VPSO_POLINS_LD_datasetgeneration_2.py", line 1178, in <module>
+    results = pyoptimize_te(inputparameters)
+  File "E:\GOPAL\cst_python_api_Filter\examples\VPSO_POLINS_LD_datasetgeneration_2.py", line 1120, in pyoptimize_te
+    results = optimizer.optimize()
+  File "E:\GOPAL\cst_python_api_Filter\examples\VPSO_POLINS_LD_datasetgeneration_2.py", line 775, in optimize
+    self._evaluate_swarm()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "E:\GOPAL\cst_python_api_Filter\examples\VPSO_POLINS_LD_datasetgeneration_2.py", line 693, in _evaluate_swarm
+    self._generate_plots()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "E:\GOPAL\cst_python_api_Filter\examples\VPSO_POLINS_LD_datasetgeneration_2.py", line 967, in _generate_plots
+    plt.savefig(summary_path, dpi=300, bbox_inches='tight')
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\IDARE_ECE\AppData\Local\Programs\Python\Python313\Lib\site-packages\matplotlib\pyplot.py", line 1251, in savefig
+    res = fig.savefig(*args, **kwargs)  # type: ignore[func-returns-value]
+  File "C:\Users\IDARE_ECE\AppData\Local\Programs\Python\Python313\Lib\site-packages\matplotlib\figure.py", line 3490, in savefig
+    self.canvas.print_figure(fname, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\IDARE_ECE\AppData\Local\Programs\Python\Python313\Lib\site-packages\matplotlib\backend_bases.py", line 2155, in print_figure
+    self.figure.draw(renderer)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\IDARE_ECE\AppData\Local\Programs\Python\Python313\Lib\site-packages\matplotlib\artist.py", line 94, in draw_wrapper
+    result = draw(artist, renderer, *args, **kwargs)
+  File "C:\Users\IDARE_ECE\AppData\Local\Programs\Python\Python313\Lib\site-packages\matplotlib\artist.py", line 71, in draw_wrapper
+    return draw(artist, renderer)
+  File "C:\Users\IDARE_ECE\AppData\Local\Programs\Python\Python313\Lib\site-packages\matplotlib\figure.py", line 3257, in draw
+    mimage._draw_list_compositing_images(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        renderer, self, artists, self.suppressComposite)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\IDARE_ECE\AppData\Local\Programs\Python\Python313\Lib\site-packages\matplotlib\image.py", line 134, in _draw_list_compositing_images
+    a.draw(renderer)
+    ~~~~~~^^^^^^^^^^
+  File "C:\Users\IDARE_ECE\AppData\Local\Programs\Python\Python313\Lib\site-packages\matplotlib\artist.py", line 71, in draw_wrapper
+    return draw(artist, renderer)
+  File "C:\Users\IDARE_ECE\AppData\Local\Programs\Python\Python313\Lib\site-packages\matplotlib\axes\_base.py", line 3180, in draw
+    self._update_title_position(renderer)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\IDARE_ECE\AppData\Local\Programs\Python\Python313\Lib\site-packages\matplotlib\axes\_base.py", line 3134, in _update_title_position
+    if title.get_window_extent(renderer).ymin < top:
+       ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\IDARE_ECE\AppData\Local\Programs\Python\Python313\Lib\site-packages\matplotlib\text.py", line 957, in get_window_extent
+    return Bbox.from_bounds(tx, ty, 0, 0)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\IDARE_ECE\AppData\Local\Programs\Python\Python313\Lib\site-packages\matplotlib\transforms.py", line 802, in from_bounds
+    return Bbox.from_extents(x0, y0, x0 + width, y0 + height)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\IDARE_ECE\AppData\Local\Programs\Python\Python313\Lib\site-packages\matplotlib\transforms.py", line 820, in from_extents
+    bbox = Bbox(np.reshape(args, (2, 2)))
+                ~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\IDARE_ECE\AppData\Local\Programs\Python\Python313\Lib\site-packages\numpy\_core\fromnumeric.py", line 324, in reshape
+    return _wrapfunc(a, 'reshape', shape, order=order)
+  File "C:\Users\IDARE_ECE\AppData\Local\Programs\Python\Python313\Lib\site-packages\numpy\_core\fromnumeric.py", line 54, in _wrapfunc
+    return _wrapit(obj, method, *args, **kwds)
+  File "C:\Users\IDARE_ECE\AppData\Local\Programs\Python\Python313\Lib\site-packages\numpy\_core\fromnumeric.py", line 41, in _wrapit
+    def _wrapit(obj, method, *args, **kwds):
+    
+KeyboardInterrupt
