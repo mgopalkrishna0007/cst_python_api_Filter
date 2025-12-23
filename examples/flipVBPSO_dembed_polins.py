@@ -51,9 +51,9 @@ all_particles_data = []
 inputparameters = [
     12.5,      # center frequency (GHz)
     5,         # bandwidth (GHz)
-    5,         # dimension of unit cell (mm)
+    3,         # dimension of unit cell (mm)
     1.52,       # width of substrate (mm)
-    15,         # number of pixels (npix) 
+    12,         # number of pixels (npix) 
     0.0, # target mean squared error (MSE)
     0          # substrate type index
 ]
@@ -63,7 +63,7 @@ OPT_FREQS = [11.0, 14.0]
 
 # Cost function weights
 WEIGHT_REAL = 1.0    # w_a
-WEIGHT_IMAG = 1.0     # w_b
+WEIGHT_IMAG = 10.0     # w_b
 
 class BPSOConfig:
     """Configuration class for Binary PSO parameters"""
@@ -71,7 +71,7 @@ class BPSOConfig:
         # PSO parameters
         self.n_particles = 100
         self.max_iterations = 20
-        self.w_initial = 1.1  # Initial inertia weight
+        self.w_initial = 1.2  # Initial inertia weight
         self.w_final = 0.1   # Final inertia weight
         self.c1 = 1.49          # Cognitive coefficient
         self.c2 = 1.49          # Social coefficient
@@ -169,39 +169,6 @@ def generate_symmetric_pattern(n):
         full_shape = mirror_8_fold_even(shape_1_8)
     
     return full_shape
-
-
-def extract_s11_at_frequencies(freq_array, S_array, target_freqs):
-    """Extract S11 at specific frequencies"""
-    s11_values = {}
-    
-    for target_freq in target_freqs:
-        # Find the closest frequency point
-        idx = np.argmin(np.abs(freq_array - target_freq))
-        closest_freq = freq_array[idx]
-        
-        # Get S11 value at this frequency
-        S11_complex = S_array[idx, 0]  # SZMax1ZMax1 is the first column
-        
-        # Extract real and imaginary parts
-        a_val = np.real(S11_complex)
-        b_val = np.imag(S11_complex)
-        
-        # Calculate magnitude and phase
-        magnitude = np.abs(S11_complex)
-        phase_rad = np.angle(S11_complex)
-        phase_deg = np.degrees(phase_rad)
-        
-        s11_values[target_freq] = {
-            'real': a_val,
-            'imag': b_val,
-            'magnitude': magnitude,
-            'phase_deg': phase_deg,
-            'frequency': closest_freq,
-            'S11_complex': S11_complex
-        }
-    
-    return s11_values
 
 
 def calculate_pcr(matrix, inputparameters):
@@ -334,22 +301,77 @@ def calculate_pcr(matrix, inputparameters):
         clear_com_cache()
 
 
+
+def extract_s11_at_frequencies(freq_array, S_array, target_freqs):
+    """Extract S11 at specific frequencies"""
+    s11_values = {}
+    
+    for target_freq in target_freqs:
+        # Find the closest frequency point
+        idx = np.argmin(np.abs(freq_array - target_freq))
+        closest_freq = freq_array[idx]
+        
+        # Get S11 value at this frequency
+        S11_complex = S_array[idx, 0]  # SZMax1ZMax1 is the first column
+        
+        # Extract real and imaginary parts
+        a_val = np.real(S11_complex)
+        b_val = np.imag(S11_complex)
+        
+        # Calculate magnitude and phase
+        magnitude = np.abs(S11_complex)
+        phase_rad = np.angle(S11_complex)
+        phase_deg = np.degrees(phase_rad)
+        
+        s11_values[target_freq] = {
+            'real': a_val,
+            'imag': b_val,
+            'magnitude': magnitude,
+            'phase_deg': phase_deg,
+            'frequency': closest_freq,
+            'S11_complex': S11_complex
+        }
+    
+    return s11_values
+
+
 def calculate_cost_from_s11(s11_values):
-    """Calculate cost using real and imaginary parts at target frequencies"""
+    """Calculate cost using magnitude and phase of S11 at target frequencies"""
     total_cost = 0.0
     
     for freq in OPT_FREQS:
         if freq in s11_values:
-            a_val = s11_values[freq]['real']
-            b_val = s11_values[freq]['imag']
+            mag = s11_values[freq]['magnitude']
+            phase_deg = s11_values[freq]['phase_deg']
             
-            # Cost function: J = ∑[w_a*(a-1)^2 + w_b*(b)^2]
-            real_error = WEIGHT_REAL * (a_val - 1.0) ** 2
-            imag_error = WEIGHT_IMAG * (b_val) ** 2
+            # Cost terms
+            # |S11| → 1
+            mag_error = WEIGHT_REAL * (mag - 1.0) ** 2
             
-            total_cost += real_error + imag_error
+            # phase → 0 degrees
+            phase_error = WEIGHT_IMAG * (phase_deg) ** 2
+            
+            total_cost += mag_error + phase_error
     
     return total_cost
+
+
+# def calculate_cost_from_s11(s11_values):
+#     """Calculate cost using real and imaginary parts at target frequencies"""
+#     total_cost = 0.0
+    
+#     for freq in OPT_FREQS:
+#         if freq in s11_values:
+#             a_val = s11_values[freq]['real']
+#             b_val = s11_values[freq]['imag']
+            
+#             # Cost function: J = ∑[w_a*(a-1)^2 + w_b*(b)^2]
+#             real_error = WEIGHT_REAL * (a_val - 1.0) ** 2
+#             imag_error = WEIGHT_IMAG * (b_val) ** 2
+            
+#             total_cost += real_error + imag_error
+    
+#     return total_cost
 
 
 def save_iteration_best(matrix, cost, s11_values, freq_array, S_array, iteration, is_global_best=False):
